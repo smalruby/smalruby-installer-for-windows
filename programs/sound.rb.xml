@@ -1,0 +1,19 @@
+<xml>
+  <character x="261" y="191" name="frog1" costumes="frog1.png" angle="0"></character>
+  <block type="character_new" x="37" y="66">
+    <field name="NAME">frog1</field>
+    <statement name="DO">
+      <block type="events_on_click">
+        <statement name="DO">
+          <block type="sound_play" inline="true">
+            <value name="NAME">
+              <block type="sound_preset_sounds">
+                <field name="NAME">piano_do.wav</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+</xml>

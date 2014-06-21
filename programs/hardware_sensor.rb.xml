@@ -1,0 +1,21 @@
+<xml>
+  <character x="261" y="191" name="frog1" costumes="frog1.png" angle="0"></character>
+  <block type="hardware_init_hardware" x="40" y="6"></block>
+  <block type="character_new" x="45" y="50">
+    <field name="NAME">frog1</field>
+    <statement name="DO">
+      <block type="hardware_on_sensor_change">
+        <field name="PIN">A0</field>
+        <statement name="DO">
+          <block type="looks_say" inline="true">
+            <value name="TEXT">
+              <block type="hardware_sensor_value">
+                <field name="PIN">A0</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+</xml>
