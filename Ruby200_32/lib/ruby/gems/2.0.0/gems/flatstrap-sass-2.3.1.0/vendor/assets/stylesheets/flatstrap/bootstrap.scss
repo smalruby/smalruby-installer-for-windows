@@ -1,0 +1,63 @@
+/*!
+ * Bootstrap v2.3.1
+ *
+ * Copyright 2012 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world @twitter by @mdo and @fat.
+ */
+
+// Core variables and mixins
+@import "flatstrap/variables"; // Modify this for custom colors, font-sizes, etc
+@import "flatstrap/mixins";
+
+// CSS Reset
+@import "flatstrap/reset";
+
+// Grid system and page structure
+@import "flatstrap/scaffolding";
+@import "flatstrap/grid";
+@import "flatstrap/layouts";
+
+// Base CSS
+@import "flatstrap/type";
+@import "flatstrap/code";
+@import "flatstrap/forms";
+@import "flatstrap/tables";
+
+// Components: common
+@import "flatstrap/font-awesome";
+@import "flatstrap/dropdowns";
+@import "flatstrap/wells";
+@import "flatstrap/component-animations";
+@import "flatstrap/close";
+
+// Components: Buttons & Alerts
+@import "flatstrap/buttons";
+@import "flatstrap/button-groups";
+@import "flatstrap/alerts"; // Note: alerts share common CSS with buttons and thus have styles in buttons
+
+// Components: Nav
+@import "flatstrap/navs";
+@import "flatstrap/navbar";
+@import "flatstrap/breadcrumbs";
+@import "flatstrap/pagination";
+@import "flatstrap/pager";
+
+// Components: Popovers
+@import "flatstrap/modals";
+@import "flatstrap/tooltip";
+@import "flatstrap/popovers";
+
+// Components: Misc
+@import "flatstrap/thumbnails";
+@import "flatstrap/media";
+@import "flatstrap/labels-badges";
+@import "flatstrap/progress-bars";
+@import "flatstrap/accordion";
+@import "flatstrap/carousel";
+@import "flatstrap/hero-unit";
+
+// Utility classes
+@import "flatstrap/utilities"; // Has to be last to override when necessary

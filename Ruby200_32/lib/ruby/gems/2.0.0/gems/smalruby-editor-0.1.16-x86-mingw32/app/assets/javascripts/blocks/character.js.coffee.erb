@@ -1,0 +1,83 @@
+# 「キャラクター」ジャンル
+
+<%
+  category = 'character'
+  color = 198
+%>
+
+# キャラクター
+<% n = "#{category}_new" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+
+    size = Blockly.BlockSvg.FIELD_HEIGHT * 2
+    imageField = new Blockly.FieldImage(null, size, size)
+
+    nameField = new Blockly.FieldLabel('')
+    # HACK: ラベルをXMLとして出力させるためにEDITABLEをtrueにしている
+    nameField.EDITABLE = true
+    # HACK: 画像とラベルの縦位置を合わせる
+    nameField.textElement_.setAttribute('y', 10)
+    nameField.setText = _.bind(@nameFieldSetText_, @)
+
+    @appendDummyInput()
+      .appendField(imageField, 'COSTUME')
+      .appendField(nameField, 'NAME')
+    @appendStatementInput('DO')
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+  dispose: (healStack, animate) ->
+    @character.off 'change', @changeHandler
+    @character.unlink?(@)
+    Blockly.Block.prototype.dispose.apply(@, arguments)
+
+  nameFieldSetText_: (name) ->
+    charSet = Smalruby.Collections.CharacterSet
+    char = charSet.findWhere({ name: name })
+    if char
+      @setCharacter(char)
+    else
+      @fieldLableSetText_(@getField_('NAME'), name)
+
+  fieldLableSetText_: (field, text) ->
+    Blockly.FieldLabel.prototype.setText.call(field, text)
+
+  setCharacter: (character) ->
+    if @changeHandler
+      @character.off 'change', @changeHandler
+
+    @character = character
+    @setFieldValue(character.costumeUrl(), 'COSTUME')
+    @fieldLableSetText_(@getField_('NAME'), character.get('name'))
+    character.link(@)
+
+    @changeHandler = (model) =>
+      @setFieldValue(model.costumeUrl(), 'COSTUME')
+      @fieldLableSetText_(@getField_('NAME'), character.get('name'))
+
+    character.on 'change', @changeHandler
+
+    @
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  c = block.character
+  switch c.get('rotationStyle')
+    when 'left_right'
+      rotationStyle = ', rotation_style: :left_right'
+    when 'none'
+      rotationStyle = ', rotation_style: :none'
+    else
+      rotationStyle = ''
+  Blockly.Ruby.definitions_["character_#{c.get('name')}"] =
+    "#{c.get('name')} = Character.new(costume: #{Blockly.Ruby.quote_(c.costume())}, x: #{c.get('x')}, y: #{c.get('y')}, angle: #{c.get('angle')}#{rotationStyle})"
+  Blockly.Ruby.cs_().push(c)
+  try
+    targetBlock = block.getInputTargetBlock('DO')
+    code = Blockly.Ruby.blockToCode(targetBlock) || '\n'
+  finally
+    Blockly.Ruby.cs_().pop()
+  code

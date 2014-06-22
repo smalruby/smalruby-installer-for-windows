@@ -1,0 +1,43 @@
+require 'rdoc/task'
+require 'rake/packagetask'
+require 'rubygems/package_task'
+
+require_relative 'lib/shared-mime-info/version'
+
+PKG_FILES = FileList["lib/*.rb", "lib/shared-mime-info/*", "Rakefile", "LICENSE", "README.rdoc"]
+
+spec = Gem::Specification.new do |s|
+  s.summary = "Library to guess the MIME type of a file with both filename lookup and magic file detection"
+  s.name = "shared-mime-info"
+  s.description = 'shared-mime-info is a pure Ruby library for accessing the MIME info database provided by Freedesktop'
+  s.author = "Mael Clerambault"
+  s.email =  "mael@clerambault.fr"
+  s.license = 'Public Domain'
+  s.homepage = 'http://shared-mime.rubyforge.org/'
+  s.version = SharedMimeInfo::VERSION
+  s.files = PKG_FILES.to_a
+end
+
+RDoc::Task.new do |rd|
+  rd.rdoc_files.include "README.rdoc", "lib/*.rb"
+  rd.options << "--inline-source"
+end
+
+Gem::PackageTask.new(spec).define
+
+desc 'Generate the magics parser'
+file "lib/magics.rb" => "magics.rl" do |t|
+  sh "ragel -R -o #{t.name} #{t.prerequisites.join(' ')}"
+end
+
+desc 'Generate the gemspec'
+task :spec do
+  open("#{spec.name}.gemspec", "w") {|g| g.puts spec.to_ruby }
+end
+
+desc "Open an pry session preloaded with this library"
+task :console do
+  require 'pry' rescue nil
+  console = defined?(Pry) ? :pry : :irb
+  sh "#{console} -rubygems -I lib -r shared-mime-info.rb"
+end

@@ -1,0 +1,12 @@
+# Ruby-Serialport Gem Release Checklist
+
+* Update documentation
+* Update lib/serialport/version.rb
+* Update CHANGELOG
+* Update README
+* `rake build`
+* `rake install`
+* Test build
+* `git tag -a v{VERSION} -m "v{VERSION}: {ONE-LINE DESCRIPTION}"`
+* Merge and Push
+* `rake release`

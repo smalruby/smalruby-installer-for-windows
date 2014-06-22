@@ -1,0 +1,81 @@
+# 「イベント」ジャンル
+
+<%
+  category = 'events'
+  color = 33
+%>
+
+# まずは
+<% n = "#{category}_on_start" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField('まずは')
+    @appendStatementInput('DO')
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  Blockly.Ruby.characterEvent_(block, 'DO', 'start')
+
+# キーボードの[▼キー]が[▼押された/押され続けている]とき
+<% n = "#{category}_on_key_push_or_down" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    keyDropdown = window.SmalrubyEditor.Sensing.KeyDropdown
+    podDropdown = window.SmalrubyEditor.Sensing.PushOrDownDropdown
+
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField('キーボードの')
+      .appendField(new Blockly.FieldDropdown(keyDropdown), 'KEY')
+      .appendField('が')
+      .appendField(new Blockly.FieldDropdown(podDropdown), 'POD')
+      .appendField('とき')
+    @appendStatementInput('DO')
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  key = @getFieldValue('KEY')
+  pod = @getFieldValue('POD')
+  Blockly.Ruby.characterEvent_(block, 'DO', "key_#{pod}", key)
+
+# キャラクターがクリックされたとき
+<% n = "#{category}_on_click" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField('キャラクターがクリックされたとき')
+    @appendStatementInput('DO')
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  Blockly.Ruby.characterEvent_(block, 'DO', 'click')
+
+# [▼キャラクター]にぶつかったとき
+<% n = "#{category}_on_hit" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField(new Smalruby.FieldCharacter(), 'CHAR') # TODO
+      .appendField('にぶつかったとき')
+    @appendStatementInput('DO')
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  char = @getFieldValue('CHAR')
+  Blockly.Ruby.characterEvent_(block, 'DO', 'hit', char)

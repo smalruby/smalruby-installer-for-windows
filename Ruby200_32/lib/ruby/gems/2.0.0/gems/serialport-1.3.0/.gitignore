@@ -1,0 +1,15 @@
+.DS_Store
+/pkg
+/doc
+/tmp
+/ext/native/*.bundle
+/ext/native/*.log
+/ext/native/*.o
+/ext/native/*.so
+/ext/native/Makefile
+.*.swp
+tags
+*.gem
+*.bundle
+Gemfile.lock
+.yardoc

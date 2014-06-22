@@ -1,0 +1,14 @@
+<%= render template: 'editor/index' %>
+
+<script type="text/javascript">
+  $(function() {
+    var data = '<%= escape_javascript(File.read(Rails.root.join("demos/#{@filename}"))) %>';
+    data = $('<div>').html(data).text();
+    Smalruby.loadXml(data);
+
+    var filename = $('<div>').html('<%= escape_javascript(@filename.sub(/\.rb\.xml$/, '.rb')) %>').text();
+    $('#filename').val(filename)
+
+    window.changed = false;
+  });
+</script>
