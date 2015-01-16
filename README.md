@@ -1,10 +1,10 @@
 # Windows用スモウルビーインストーラ
 
-これはWindows用のスモウルビーのインストーラ(Smalruby installer for Windows)です。次のリンクからZIP形式(じっぷけいしき)のファイルをダウンロードして、展開（てんかい）するだけでスモウルビーを使うことができます♪
+これはWindows用のスモウルビーのインストーラ(Smalruby installer for Windows)です。次のリンクから<ruby>ZIP形式<rp>(</rp><rt>じっぷけいしき</rt><rp>)</rp></ruby>のファイルをダウンロードして、<ruby>展開<rp>（</rp><rt>てんかい</rt><rp>）</rp></ruby>するだけでスモウルビーを使うことができます♪
 
 https://github.com/smalruby/smalruby-installer-for-windows/archive/master.zip
 
-詳（くわ）しいやり方は https://github.com/smalruby/smalruby-installer-for-windows/wiki をご覧（らん）ください。
+<ruby>詳<rp>（</rp><rt>くわ</rt><rp>）</rp></ruby>しいやり方は https://github.com/smalruby/smalruby-installer-for-windows/wiki をご<ruby>覧<rp>（</rp><rt>らん</rt><rp>）</rp></ruby>ください。
 
 ## 著作権表記
 
