@@ -1,0 +1,212 @@
+Blockly.Ruby = new Blockly.Generator('Ruby')
+
+Blockly.Ruby.addReservedWords '
+BEGIN    class    ensure   nil      self     when
+END      def      false    not      super    while
+alias    defined? for      or       then     yield
+and      do       if       redo     true     __LINE__
+begin    else     in       rescue   undef    __FILE__
+break    elsif    module   retry    unless   __ENCODING__
+case     end      next     return   until
+'.split(/\s+/)
+
+Blockly.Ruby.ORDER_ATOMIC = 0            # 0 "" ...
+Blockly.Ruby.ORDER_COLLECTION = 1        # tuples, lists, dictionaries
+Blockly.Ruby.ORDER_STRING_CONVERSION = 1 # `expression...`
+Blockly.Ruby.ORDER_MEMBER = 2           # ::
+Blockly.Ruby.ORDER_INDEX = 3            # []
+Blockly.Ruby.ORDER_FUNCTION_CALL = 4    # ()
+Blockly.Ruby.ORDER_UNARY_SIGN = 5       # +(単項)  !  ~
+Blockly.Ruby.ORDER_EXPONENTIATION = 6   # **
+Blockly.Ruby.ORDER_UNARY_MINUS_SIGN = 7 # -(単項)
+Blockly.Ruby.ORDER_MULTIPLICATIVE = 8   # *  /  %
+Blockly.Ruby.ORDER_ADDITIVE = 9         # +  -
+Blockly.Ruby.ORDER_BITWISE_SHIFT = 10   # << >>
+Blockly.Ruby.ORDER_BITWISE_AND = 11     # &
+Blockly.Ruby.ORDER_BITWISE_XOR = 12     # ^
+Blockly.Ruby.ORDER_BITWISE_OR = 12      # |
+Blockly.Ruby.ORDER_RELATIONAL = 13      # > >=  < <=
+Blockly.Ruby.ORDER_EQUALS = 14          # <=> ==  === !=  =~  !~
+Blockly.Ruby.ORDER_LOGICAL_AND = 15     # &&
+Blockly.Ruby.ORDER_LOGICAL_OR = 16      # ||
+Blockly.Ruby.ORDER_RANGE = 17           # ..  ...
+Blockly.Ruby.ORDER_CONDITIONAL = 18     # ?:(条件演算子)
+Blockly.Ruby.ORDER_ASSIGNMENT = 19      # =(+=, -= ... )
+Blockly.Ruby.ORDER_NOT = 20             # not
+Blockly.Ruby.ORDER_AND_OR = 21          # and or
+Blockly.Ruby.ORDER_NONE = 99             # (...)
+
+Blockly.Ruby.INFINITE_LOOP_TRAP = null
+
+Blockly.Ruby.init = ->
+  @definitions_ = Object.create(null)
+
+  if Blockly.Variables
+    if !@variableDB_
+      @variableDB_ = new Blockly.Names(Blockly.Ruby.RESERVED_WORDS_)
+    else
+      @variableDB_.reset()
+
+    @definitions_['require_smalruby'] = 'require "smalruby"'
+    @definitions_['receiver_stack'] = ['main']
+    @definitions_['character_stack'] = []
+
+Blockly.Ruby.defineCharacter = (c) ->
+  name = c.get('name')
+  blockName = "character_#{name}"
+  if !Blockly.Ruby.definitions_[blockName]
+    switch c.get('rotationStyle')
+      when 'left_right'
+        rotationStyle = ', rotation_style: :left_right'
+      when 'none'
+        rotationStyle = ', rotation_style: :none'
+      else
+        rotationStyle = ''
+    Blockly.Ruby.definitions_[blockName] =
+      "#{name} = Character.new(costume: #{Blockly.Ruby.quote_(c.costume())}, x: #{c.get('x')}, y: #{c.get('y')}, angle: #{c.get('angle')}#{rotationStyle})"
+
+Blockly.Ruby.characterStack = ->
+  @definitions_['character_stack']
+
+Blockly.Ruby.character = ->
+  _.last(@characterStack())
+
+Blockly.Ruby.receiverStack = ->
+  @definitions_['receiver_stack']
+
+Blockly.Ruby.receiver = ->
+  _.last(@receiverStack())
+
+Blockly.Ruby.receiverName = (options = {}) ->
+  opts =
+    object: Blockly.Ruby.character()
+    dropSelf: true
+  _.extend(opts, options)
+  r = @receiver()
+  if r == opts.object
+    if opts.dropSelf
+      ''
+    else
+      'self.'
+  else
+    "#{opts.object.get('name')}."
+
+Blockly.Ruby.cs = Blockly.Ruby.characterStack
+Blockly.Ruby.cs_ = Blockly.Ruby.characterStack
+Blockly.Ruby.c = Blockly.Ruby.character
+Blockly.Ruby.c_ = Blockly.Ruby.character
+Blockly.Ruby.rs = Blockly.Ruby.receiverStack
+Blockly.Ruby.rs_ = Blockly.Ruby.receiverStack
+Blockly.Ruby.r = Blockly.Ruby.receiver
+Blockly.Ruby.r_ = Blockly.Ruby.receiver
+Blockly.Ruby.rn = Blockly.Ruby.receiverName
+Blockly.Ruby.rn_ = Blockly.Ruby.receiverName
+
+Blockly.Ruby.characterMethodCall_ = (method, args, options = {}) ->
+  res = @characterMethodCallInput_(method, args, options)
+  if res[0]
+    "#{res[0]}\n"
+  else
+    ''
+
+Blockly.Ruby.characterMethodCallInput_ = (method, args, options = {}) ->
+  code =
+    if @c_()
+      if args && args.length > 0
+        "#{@rn_(options)}#{method}(#{args})"
+      else
+        "#{@rn_(options)}#{method}"
+    else
+      null
+  [code, @ORDER_FUNCTION_CALL]
+
+Blockly.Ruby.characterSetVariable_ = (name, val, operator = '=') ->
+  if @c_()
+    "#{@rn_({ dropSelf: false })}#{name} #{operator} #{val}\n"
+  else
+    ''
+
+Blockly.Ruby.characterEvent_ = (block, bodyName, name, arg = null) ->
+  if c = @c_()
+    @rs_().push(c)
+    try
+      body = Blockly.Ruby.statementToCode(block, bodyName) || '\n'
+    finally
+      @rs_().pop()
+
+    if arg
+      arg = ", #{arg}"
+    else
+      arg = ''
+
+    """
+
+
+    #{@rn_()}on(:#{name}#{arg}) do
+    #{body}end
+
+    """
+  else
+    ''
+
+Blockly.Ruby.finish = (code) ->
+  requires = []
+  definitions = []
+  for name of Blockly.Ruby.definitions_
+    do (name) ->
+      def = Blockly.Ruby.definitions_[name]
+      if _.isString(def)
+        if def.match(/^require\s*('\S+'|"\S+")/)
+          requires.push(def)
+        else
+          definitions.push(def)
+
+  if definitions.length == 0 && code.length == 0
+    return ''
+
+  allDefs = requires.join('\n') + '\n\n'
+  if definitions.length > 0
+    allDefs += definitions.join('\n')
+      .replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n')
+  allDefs + code
+
+Blockly.Ruby.scrubNakedValue = (line) ->
+  line + '\n'
+
+Blockly.Ruby.escapeChars_ =
+  '"': '\\"'
+
+Blockly.Ruby.quote_ = (string) ->
+  # copy and modified goog.string.quote:
+  # http://docs.closure-library.googlecode.com/git/namespace_goog_string.html
+  s = String(string)
+  sb = ['"']
+  for i in [0...s.length]
+    do (i) ->
+      ch = s.charAt(i)
+      sb[i + 1] = Blockly.Ruby.escapeChars_[ch] || ch
+  sb.push('"')
+  sb.join('')
+
+Blockly.Ruby.scrub_ = (block, code) ->
+  if code == null
+    return ''
+
+  commentCode = ''
+  if !block.outputConnection || !block.outputConnection.targetConnection
+    comment = block.getCommentText()
+    if comment
+      commentCode += @prefixLines(comment, '# ') + '\n'
+
+    for input in block.inputList
+      do (input) =>
+        if input.type == Blockly.INPUT_VALUE
+          childBlock = input.connection.targetBlock()
+          if childBlock
+            comment = @allNestedComments(childBlock)
+            if comment
+              commentCode += @prefixLines(comment, '# ')
+
+  nextBlock = block.nextConnection && block.nextConnection.targetBlock()
+  nextCode = this.blockToCode(nextBlock)
+  commentCode + code + nextCode

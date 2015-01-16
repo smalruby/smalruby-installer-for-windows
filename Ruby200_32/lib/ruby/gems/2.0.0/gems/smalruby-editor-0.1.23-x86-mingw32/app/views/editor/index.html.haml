@@ -1,0 +1,130 @@
+.navbar{:id => "main-menu", :class => 'navbar-inverse'}
+  .navbar-inner
+    %ul.nav{:id => 'tabs'}
+      %li.active
+        %a#block-mode-button{:href => "#block-tab"}<
+          %i.icon-folder-close
+          =t('.block')
+      %li
+        %a#ruby-mode-button{:href => "#ruby-tab"}<
+          %i.icon-pencil
+          Ruby
+
+    = form_tag(source_codes_load_path, id: "file-form", class: "navbar-form pull-right", method: "post", multipart: true) do
+      %input#load-file{:type => 'file', :name => 'source_code[file]', :style => 'display: none'}
+      %input#filename{:type => 'text', :class => 'span4', :placeholder => t('.msg_input_program_name')}
+      = link_to '', source_codes_download_path, id: 'download-link', style: 'display: none', 'data-method' => 'delete'
+
+      - if standalone?
+        %button#run-button{:class => "btn btn-success"}<
+          %i.icon-flag
+          = t('.run')
+      - else
+        %button#download-button{:class => "btn btn-primary"}<
+          %i.icon-download-alt
+          = t('.download')
+
+      - if raspberrypi?
+        - if standalone?
+          - load_id = 'load-local-button'
+        - else
+          - load_id = 'load-button'
+        %button.btn{id: "#{load_id}", class: "btn btn-primary"}<
+          %i.icon-folder-open
+          = t('.load')
+        - if standalone?
+          %button#save-button.btn{class: "btn-primary"}<
+            %i.icon-hdd
+            = t('.save')
+        %button#check-button.btn{class: "btn-primary"}<
+          %i.icon-check
+          = t('.check')
+        %button#reset-button.btn{class: "btn-primary"}<
+          %i.icon-off
+          = t('Reset')
+        - if standalone?
+          - if session[:username]
+            %button#signout-button.btn{class: "btn-primary"}<
+              %i.icon-eject
+              = t('logout')
+          - else
+            %button#signout-button.btn{class: "btn-primary", style: "display: none"}<
+              %i.icon-eject
+              = t('logout')
+
+      - else
+        .btn-group
+          %a#submenu-button{:class => "dropdown-toggle btn btn-primary", :"data-toggle" => "dropdown", :href => "#"}
+            %i.icon-reorder
+          %ul#submenu.dropdown-menu{:class => "pull-right"}
+            %li
+              - if standalone?
+                - load_id = 'load-local-button'
+              - else
+                - load_id = 'load-button'
+              %a{:id => "#{load_id}"}
+                %h4
+                  %i.icon-folder-open
+                  = t('.load')
+            - if standalone?
+              %li
+                %a#save-button
+                  %h4
+                    %i.icon-hdd
+                    = t('.save')
+            %li
+              %a#check-button
+                %h4
+                  %i.icon-check
+                  = t('.check')
+            %li
+              %a#reset-button
+                %h4
+                  %i.icon-off
+                  = t('.reset')
+            - if standalone?
+              %li
+                - if session[:username]
+                  %a#signout-button
+                    %h4
+                      %i.icon-eject
+                      = t('.logout')
+                - else
+                  %a#signout-button{style: "display: none"}
+                    %h4
+                      %i.icon-eject
+                      = t('.logout')
+
+      - if standalone?
+        - if session[:username]
+          %button#signin-button{class: "btn btn-danger", style: "display: none"}<
+            %i.icon-user
+            = t('.login')
+          %button#username-button{class: "btn btn-success"}<
+            %i.icon-user
+            %span#username-label<
+              = session[:username]
+        - else
+          %button#signin-button{class: "btn btn-danger"}<
+            %i.icon-user
+            = t('.login')
+          %button#username-button{class: "btn btn-success", style: "display: none"}<
+            %i.icon-user
+            %span#username-label
+
+#messages
+
+#modes-container{:class => 'tab-content'}
+  #block-tab{:class => 'tab-pane active modes-tab-pane'}
+    = render 'block_tab'
+
+  #ruby-tab{:class => 'tab-pane modes-tab-pane'}
+    #text-editor
+
+= render 'signin_modal'
+= render 'load_modal'
+= render 'reset_modal'
+
+- if raspberrypi?
+  %script{type: "text/javascript"}
+    $(function() { $('div[id=":7"]').hide(); });

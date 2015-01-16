@@ -1,0 +1,27 @@
+have_header: checking for stdio.h... -------------------- yes
+
+"gcc -o conftest.exe -IC:/smalruby-installer-for-windows/Ruby200_32/include/ruby-2.0.0/i386-mingw32 -IC:/smalruby-installer-for-windows/Ruby200_32/include/ruby-2.0.0/ruby/backward -IC:/smalruby-installer-for-windows/Ruby200_32/include/ruby-2.0.0 -I. -DFD_SETSIZE=2048 -D_WIN32_WINNT=0x0501 -D_FILE_OFFSET_BITS=64   -O3 -fno-omit-frame-pointer -fno-fast-math -g -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration conftest.c  -L. -LC:/smalruby-installer-for-windows/Ruby200_32/lib -L.      -lmsvcrt-ruby200  -lshell32 -lws2_32 -limagehlp -lshlwapi  "
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <winsock2.h>
+4: #include <windows.h>
+5: int main(int argc, char **argv)
+6: {
+7:   return 0;
+8: }
+/* end */
+
+"gcc -E -IC:/smalruby-installer-for-windows/Ruby200_32/include/ruby-2.0.0/i386-mingw32 -IC:/smalruby-installer-for-windows/Ruby200_32/include/ruby-2.0.0/ruby/backward -IC:/smalruby-installer-for-windows/Ruby200_32/include/ruby-2.0.0 -I. -DFD_SETSIZE=2048 -D_WIN32_WINNT=0x0501 -D_FILE_OFFSET_BITS=64   -O3 -fno-omit-frame-pointer -fno-fast-math -g -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration  conftest.c -o conftest.i"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <winsock2.h>
+4: #include <windows.h>
+5: #include <stdio.h>
+/* end */
+
+--------------------
+

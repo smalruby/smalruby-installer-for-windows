@@ -1,0 +1,266 @@
+# 「調べる」ジャンル
+
+<%
+  category = 'sensing'
+  require 'smalruby_editor'
+  require 'smalruby_editor/blockly_message_helper'
+  color = SmalrubyEditor::COLORS[category.to_sym]
+%>
+
+$(document).ready ->
+  # 調べるの環境設定
+  window.SmalrubyEditor.Sensing =
+    KeyDropdown: [
+      [<%= bm('.k_up') %>, 'K_UP'],
+      [<%= bm('.k_down') %>, 'K_DOWN'],
+      [<%= bm('.k_left') %>, 'K_LEFT'],
+      [<%= bm('.k_right') %>, 'K_RIGHT'],
+      [<%= bm('.k_space') %>, 'K_SPACE'],
+      <% (('a'..'z').to_a + ('0'..'9').to_a).each do |k| %>
+      ['<%= k %>', 'K_<%= k.upcase %>'],
+      <% end %>
+    ]
+    PushOrDownDropdown: [
+      [<%= bm('.push') %>, 'push'],
+      [<%= bm('.hold_down') %>, 'down'],
+    ]
+    MouseButtonDropdown: [
+      [<%= bm('.m_lbutton') %>, 'M_LBUTTON'],
+      [<%= bm('.m_mbutton') %>, 'M_MBUTTON'],
+      [<%= bm('.m_rbutton') %>, 'M_RBUTTON'],
+    ]
+    DownOrUpDropdown: [
+      [<%= bm('.down') %>, 'down'],
+      [<%= bm('.up') %>, 'up'],
+    ]
+
+# 条件:端に触れた
+<% n = "#{category}_reach_wall" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput().appendField(<%= bm('.reach_wall') %>)
+    @setOutput(true, 'Boolean')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  Blockly.Ruby.characterMethodCallInput_('reach_wall?')
+
+# HACK: 後方互換性のため、motion_reach_wallとして複製する
+Blockly.Blocks['motion_reach_wall'] = Blockly.Blocks['<%= n %>']
+Blockly.Ruby['motion_reach_wall'] = Blockly.Ruby['<%= n %>']
+
+# 条件:キーボードの[▼キー]が[▼押された]
+<% n = "#{category}_input_key_push_or_down" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    keyDropdown = window.SmalrubyEditor.Sensing.KeyDropdown
+    podDropdown = window.SmalrubyEditor.Sensing.PushOrDownDropdown
+
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField(<%= bm('.input_key_push_or_down_prefix') %>)
+      .appendField(new Blockly.FieldDropdown(keyDropdown), 'KEY')
+      .appendField(<%= bm('.input_key_push_or_down_middle') %>)
+      .appendField(new Blockly.FieldDropdown(podDropdown), 'POD')
+      .appendField(<%= bm('.input_key_push_or_down_suffix') %>)
+    @setOutput(true, 'Boolean')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  key = @getFieldValue('KEY')
+  pod = @getFieldValue('POD')
+  ["Input.key_#{pod}?(#{key})", Blockly.Ruby.ORDER_ATOMIC]
+
+# 条件:マウスの[▼左ボタン]が[▼押された]
+<% n = "#{category}_input_mouse_push_or_down" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    mbDropdown = window.SmalrubyEditor.Sensing.MouseButtonDropdown
+    podDropdown = window.SmalrubyEditor.Sensing.PushOrDownDropdown
+
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField(<%= bm('.input_mouse_push_or_down_prefix') %>)
+      .appendField(new Blockly.FieldDropdown(mbDropdown), 'MOUSE_BUTTON')
+      .appendField(<%= bm('.input_mouse_push_or_down_middle') %>)
+      .appendField(new Blockly.FieldDropdown(podDropdown), 'POD')
+      .appendField(<%= bm('.input_mouse_push_or_down_suffix') %>)
+    @setOutput(true, 'Boolean')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  mb = @getFieldValue('MOUSE_BUTTON')
+  pod = @getFieldValue('POD')
+  ["Input.mouse_#{pod}?(#{mb})", Blockly.Ruby.ORDER_ATOMIC]
+
+# 変数:マウスのx座標
+# 変数:マウスのy座標
+<%
+  %w(x y).each do |suffix|
+    n = "#{category}_input_mouse_pos_#{suffix}"
+%>
+
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField(<%= bm(".input_mouse_pos_#{suffix}") %>)
+    @setOutput(true, 'Number')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  ['Input.mouse_pos_<%= suffix %>', Blockly.Ruby.ORDER_ATOMIC]
+<% end  %>
+
+# 条件:[▼キャラクター]に触れた
+<% n = "#{category}_hit" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField(<%= bm('.hit_prefix') %>)
+      .appendField(new Smalruby.FieldCharacter(), 'CHAR')
+      .appendField(<%= bm('.hit_suffix') %>)
+    @setOutput(true, 'Boolean')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  char = @getCharacterFieldValue()
+  Blockly.Ruby.characterMethodCallInput_('hit?', char)
+
+# [　]と聞いて待つ
+<% n = "#{category}_ask" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @interpolateMsg('%1と聞いて待つ',
+                     ['TEXT', ['String'], Blockly.ALIGN_RIGHT],
+                     Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  text = Blockly.Ruby.valueToCode(@, 'TEXT', Blockly.Ruby.ORDER_NONE) || '""'
+  "ask(#{text})\n"
+
+# 変数:答え
+<% n = "#{category}_answer" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField('答え')
+    @setOutput(true, 'String')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  ['answer', Blockly.Ruby.ORDER_ATOMIC]
+
+# 変数:タイマー
+<% n = "#{category}_timer_count" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField('タイマー')
+    @setOutput(true, 'Number')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  ['timer.count', Blockly.Ruby.ORDER_ATOMIC]
+
+# タイマーをリセット
+<% n = "#{category}_timer_reset" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField('タイマーをリセット')
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  'timer.reset\n'
+
+# 変数:[▼キャラクター]の[▼プロパティ]
+<% n = "#{category}_character_property" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    dropdown = [
+      [<%= bm('.character_property_x') %>, 'x'],
+      [<%= bm('.character_property_y') %>, 'y'],
+      [<%= bm('.character_property_angle') %>, 'angle'],
+      [<%= bm('.character_property_costume_index') %>, 'costume_index'],
+      [<%= bm('.character_property_costume') %>, 'costume'],
+      [<%= bm('.character_property_scale') %>, 'scale'],
+      [<%= bm('.character_property_volume') %>, 'volume'],
+    ]
+
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField(new Smalruby.FieldCharacter(), 'CHAR')
+      .appendField(<%= bm('.character_property_middle') %>)
+      .appendField(new Blockly.FieldDropdown(dropdown), 'PROPERTY')
+    @setOutput(true, ['Number', 'String'])
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  char = @getCharacterFieldValue()
+  property = @getFieldValue('PROPERTY')
+  c = Smalruby.Collections.CharacterSet.findWhere({ name: char })
+  Blockly.Ruby.characterMethodCallInput_(property, null, { object: c })
+
+# 変数:現在の[▼時]
+<% n = "#{category}_time_now" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    dropdown = [
+      [<%= bm('.time_now_year') %>, 'year'],
+      [<%= bm('.time_now_month') %>, 'month'],
+      [<%= bm('.time_now_day') %>, 'day'],
+      [<%= bm('.time_now_wday') %>, 'wday'],
+      [<%= bm('.time_now_hour') %>, 'hour'],
+      [<%= bm('.time_now_min') %>, 'min'],
+      [<%= bm('.time_now_sec') %>, 'sec'],
+    ]
+
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField(<%= bm('.time_now') %>)
+      .appendField(new Blockly.FieldDropdown(dropdown), 'METHOD')
+    @setOutput(true, 'Number')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  method = @getFieldValue('METHOD')
+  ["Time.now.#{method}", Blockly.Ruby.ORDER_ATOMIC]
+
+# 変数:2000年からの日数
+<% n = "#{category}_days_since_2000" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= color %>)
+    @appendDummyInput()
+      .appendField('2000年からの日数')
+    @setOutput(true, 'Number')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  ['(Time.now - Time.mktime(2000, 1, 1)).to_i / 1.day',
+   Blockly.Ruby.ORDER_ATOMIC]
