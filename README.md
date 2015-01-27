@@ -2,7 +2,7 @@
 
 これはWindows用のスモウルビーのインストーラ(Smalruby installer for Windows)です。次のリンクから<ruby>ZIP形式<rp>(</rp><rt>じっぷけいしき</rt><rp>)</rp></ruby>のファイルをダウンロードして、<ruby>展開<rp>（</rp><rt>てんかい</rt><rp>）</rp></ruby>するだけでスモウルビーを使うことができます♪
 
-https://github.com/smalruby/smalruby-installer-for-windows/archive/master.zip
+https://github.com/smalruby/smalruby-installer-for-windows/archive/v0.2.1.zip
 
 <ruby>詳<rp>（</rp><rt>くわ</rt><rp>）</rp></ruby>しいやり方は https://github.com/smalruby/smalruby-installer-for-windows/wiki をご<ruby>覧<rp>（</rp><rt>らん</rt><rp>）</rp></ruby>ください。
 
