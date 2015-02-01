@@ -1,0 +1,46 @@
+LEGAL NOTICE INFORMATION
+------------------------
+
+All the files in this distribution are covered under either the
+smalruby-editor's license (see the file LICENSE) except some files
+mentioned below.
+
+public/fonts/FontAwesome.otf, public/fonts/fontawesome-webfont.eot,
+public/fonts/fontawesome-webfont.ttf,
+public/fonts/fontawesome-webfont.woff:
+
+  These's license is SIL Open Font License (OFL) 1.1:
+  http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL .
+
+vendor/assets/javascripts/blockly/**/*, public/blockly/**/*:
+
+  These's license is Apache License Version 2.0, January 2011:
+  http://www.apache.org/licenses/ .
+
+vendor/assets/javascripts/jquery.blockUI.js:
+
+  Copyright © 2007-2013 M. Alsup.
+
+  The BlockUI plugin is dual licensed under the MIT and GPL licenses.
+
+  You may use either license. The MIT license is recommended for most
+  projects because it is simple and easy to understand and it places
+  almost no restrictions on what you can do with the plugin.
+
+  If the GPL suits your project better you are also free to use the
+  plugin under that license.
+
+  You do not have to do anything special to choose one license or the
+  other and you don't have to notify anyone which license you are
+  using. You are free to use the BlockUI plugin in commercial projects
+  as long as the copyright header is left intact.
+
+  https://github.com/malsup/blockui
+
+public/favicon.ico, public/apple-touch-icon.png, public/large.png,
+public/square.png, public/tiny.png, public/wide.png:
+
+  Copyright (C) Hikari Arakawa (Ruby Programming Shounendan and
+  Smalruby) 2013. このイメージキャラクター、もしくはその派生版は、Ｒｕ
+  ｂｙプログラミング少年団とスモウルビー：Smalrubyに関連する文脈で誰で
+  も自由に利用できるが、それらは荒川ひかりによる保証を示すものではない。

@@ -11,6 +11,6 @@
 
 @cd /d %~dp0programs
 @set /P _=Upgrade (uninstall / install) smalruby-editor:
-call gem uninstall smalruby smalruby-editor dino serialport
+call gem uninstall smalruby-editor smalruby smalrubot dino serialport
 call gem install smalruby-editor --no-ri --no-rdoc
 @set /P _=Press enter to quit:

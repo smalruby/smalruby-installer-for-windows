@@ -1,0 +1,69 @@
+ja:
+  common:
+    smalruby_editor: "スモウルビー v%{version}"
+    "ok": "決めた！"
+    cancel: "やめる"
+    reset: &reset "リセット"
+    login: &login "ログイン"
+    name: "名前"
+
+  controllers:
+    source_codes:
+      not_ruby_program: "はRubyのプログラムではありません"
+      not_exist: "はありません"
+      exist: "すでに同じ名前のプログラムがあります"
+
+  editor:
+    index:
+      block: "ブロック"
+      msg_input_program_name: "プログラムの名前を入れてね（例：01.rb）"
+      run: "実行"
+      download: "ダウンロード"
+      load: "ロード"
+      save: "セーブ"
+      check: "チェック"
+      reset: *reset
+      logout: "ログアウト"
+      login: *login
+
+    block_tab:
+      character: "キャラクター"
+      new_character: "新しいキャラクター"
+      direction_parameter: "向き:"
+      stage: "ステージ"
+
+    toolbox:
+      motion: "■動き"
+      looks: "★見た目"
+      sound: "♪音"
+      pen: "●ペン"
+      data: "☼データ"
+      events: "♣イベント"
+      control: "◆制御"
+      sensing: "◎調べる"
+      operators: "演算"
+      etc: "♠その他"
+      hello: "こんにちは！"
+      world: "あいうえお"
+      text: "文章"
+
+    character_modal:
+      name: "名前"
+      x_position: "X座標"
+      y_position: "Y座標"
+      msg_input_name: "car1やball1など"
+      direction: "向き"
+
+    load_modal:
+      preset_programs: "いろいろなプログラム"
+      find_program: "プログラムをさがす"
+      computer: "このコンピュータ"
+      remix: "リミックス"
+
+    reset_modal:
+      title: "本当にリセットしますか？"
+      message: "作成中のプログラムが消えてしまうよ！"
+
+    signin_modal:
+      message: "あなたの名前をいれて、<br />ほかの人のプログラムとまざらないようにしよう♪"
+      username_placeholder: "名前、生徒番号、ニックネームなど"
