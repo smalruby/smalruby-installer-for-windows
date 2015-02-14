@@ -1,0 +1,2 @@
+U:RDoc::Attr[iI"left_speed:ETI"4Smalruby::Hardware::TwoWheelDriveCar#left_speed;FI"R;T:publico:RDoc::Markup::Document:@parts[o:RDoc::Markup::Paragraph;	[I"!左のモーターの速度%;T:
+@fileI"1lib/smalruby/hardware/two_wheel_drive_car.rb;T:0@omit_headings_from_table_of_contents_below0F@I")Smalruby::Hardware::TwoWheelDriveCar;FcRDoc::NormalClass0
