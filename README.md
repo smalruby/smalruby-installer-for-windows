@@ -17,9 +17,9 @@ https://github.com/smalruby/smalruby-installer-for-windows/archive/master.zip
 
  * icon-smalruby.ico
 
-以下のフォルダには、 http://rubyinstaller.org/ で配布されている Ruby の処理系 [Ruby 2.0.0-p481](http://dl.bintray.com/oneclick/rubyinstaller/ruby-2.0.0-p481-i386-mingw32.7z?direct) 、 smalruby-editor 、 smalruby-editor に依存する gem が含まれています。各ライセンスの詳細は、それぞれのファイルをご確認ください。
+以下のフォルダには、 http://rubyinstaller.org/ で配布されている Ruby の処理系 [Ruby 2.1.6](http://dl.bintray.com/oneclick/rubyinstaller/ruby-2.1.6-i386-mingw32.7z) 、 smalruby-editor 、 smalruby-editor に依存する gem が含まれています。各ライセンスの詳細は、それぞれのファイルをご確認ください。
 
- * Ruby200_32
+ * Ruby216_32
 
 以下のフォルダに含まれるサンプルプログラムは、 MIT ライセンスです。
 
