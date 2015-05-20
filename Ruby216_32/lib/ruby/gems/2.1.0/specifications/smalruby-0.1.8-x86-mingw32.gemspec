@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
-# stub: smalruby 0.1.7 x86-mingw32 lib
+# stub: smalruby 0.1.8 x86-mingw32 lib
 
 Gem::Specification.new do |s|
   s.name = "smalruby"
-  s.version = "0.1.7"
+  s.version = "0.1.8"
   s.platform = "x86-mingw32"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<guard-rubocop>, [">= 0"])
       s.add_runtime_dependency(%q<mime-types>, ["~> 1.6"])
       s.add_runtime_dependency(%q<activesupport>, [">= 0"])
-      s.add_runtime_dependency(%q<dxruby>, ["= 1.4.0"])
+      s.add_runtime_dependency(%q<dxruby>, ["~> 1.4.0"])
       s.add_runtime_dependency(%q<smalrubot>, ["~> 0.0.5"])
     else
       s.add_dependency(%q<bundler>, ["~> 1.3"])
@@ -50,7 +50,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<guard-rubocop>, [">= 0"])
       s.add_dependency(%q<mime-types>, ["~> 1.6"])
       s.add_dependency(%q<activesupport>, [">= 0"])
-      s.add_dependency(%q<dxruby>, ["= 1.4.0"])
+      s.add_dependency(%q<dxruby>, ["~> 1.4.0"])
       s.add_dependency(%q<smalrubot>, ["~> 0.0.5"])
     end
   else
@@ -66,7 +66,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<guard-rubocop>, [">= 0"])
     s.add_dependency(%q<mime-types>, ["~> 1.6"])
     s.add_dependency(%q<activesupport>, [">= 0"])
-    s.add_dependency(%q<dxruby>, ["= 1.4.0"])
+    s.add_dependency(%q<dxruby>, ["~> 1.4.0"])
     s.add_dependency(%q<smalrubot>, ["~> 0.0.5"])
   end
 end

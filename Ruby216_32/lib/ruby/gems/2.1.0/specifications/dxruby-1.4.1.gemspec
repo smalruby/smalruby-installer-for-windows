@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
-# stub: dxruby 1.4.0 ruby lib
+# stub: dxruby 1.4.1 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "dxruby"
-  s.version = "1.4.0"
+  s.version = "1.4.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["mirichi"]
-  s.date = "2013-06-02"
+  s.date = "2014-03-11"
   s.description = "2D game library for Windows with DirectX9"
   s.email = ["sawara01@gmail.com"]
   s.homepage = "http://dxruby.sourceforge.jp/"

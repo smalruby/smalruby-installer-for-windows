@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<haml-rails>, [">= 0"])
       s.add_runtime_dependency(%q<nokogiri>, [">= 0"])
       s.add_runtime_dependency(%q<settingslogic>, [">= 0"])
-      s.add_runtime_dependency(%q<smalruby>, ["~> 0.1.7"])
+      s.add_runtime_dependency(%q<smalruby>, ["~> 0.1.8"])
       s.add_development_dependency(%q<bundler>, ["~> 1.3"])
       s.add_development_dependency(%q<rake>, [">= 0"])
     else
@@ -57,7 +57,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<haml-rails>, [">= 0"])
       s.add_dependency(%q<nokogiri>, [">= 0"])
       s.add_dependency(%q<settingslogic>, [">= 0"])
-      s.add_dependency(%q<smalruby>, ["~> 0.1.7"])
+      s.add_dependency(%q<smalruby>, ["~> 0.1.8"])
       s.add_dependency(%q<bundler>, ["~> 1.3"])
       s.add_dependency(%q<rake>, [">= 0"])
     end
@@ -75,7 +75,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<haml-rails>, [">= 0"])
     s.add_dependency(%q<nokogiri>, [">= 0"])
     s.add_dependency(%q<settingslogic>, [">= 0"])
-    s.add_dependency(%q<smalruby>, ["~> 0.1.7"])
+    s.add_dependency(%q<smalruby>, ["~> 0.1.8"])
     s.add_dependency(%q<bundler>, ["~> 1.3"])
     s.add_dependency(%q<rake>, [">= 0"])
   end
