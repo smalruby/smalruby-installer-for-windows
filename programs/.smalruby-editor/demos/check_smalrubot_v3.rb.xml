@@ -1,0 +1,258 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <character x="224" y="312" name="ryu1" costumes="ryu1.png" angle="0"></character>
+  <block type="ruby_comment" id="172" x="15" y="-12">
+    <field name="COMMENT">スモウルボットV3のチェック</field>
+    <next>
+      <block type="character_new" id="173">
+        <field name="NAME">ryu1</field>
+        <statement name="DO">
+          <block type="events_on_start" id="174">
+            <statement name="DO">
+              <block type="looks_say" id="175" inline="true">
+                <value name="TEXT">
+                  <block type="text" id="176">
+                    <field name="TEXT">忍者をクリックするとスモウルボットV3が動くよ</field>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <next>
+              <block type="events_on_click" id="177">
+                <statement name="DO">
+                  <block type="control_times" id="178" inline="true">
+                    <value name="COUNT">
+                      <block type="math_number" id="179">
+                        <field name="NUM">2</field>
+                      </block>
+                    </value>
+                    <statement name="DO">
+                      <block type="looks_say" id="180" inline="true">
+                        <value name="TEXT">
+                          <block type="text" id="181">
+                            <field name="TEXT">進める</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="hardware_smalrubot_v3_action_with_sec" id="277" inline="true">
+                            <field name="ACTION">forward</field>
+                            <value name="SEC">
+                              <block type="math_number" id="278">
+                                <field name="NUM">0.75</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="control_await" id="184">
+                                <next>
+                                  <block type="looks_say" id="185" inline="true">
+                                    <value name="TEXT">
+                                      <block type="text" id="186">
+                                        <field name="TEXT">バックさせる</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="hardware_smalrubot_v3_action_with_sec" id="279" inline="true">
+                                        <field name="ACTION">backward</field>
+                                        <value name="SEC">
+                                          <block type="math_number" id="280">
+                                            <field name="NUM">0.75</field>
+                                          </block>
+                                        </value>
+                                        <next>
+                                          <block type="control_await" id="189">
+                                            <next>
+                                              <block type="looks_say" id="190" inline="true">
+                                                <value name="TEXT">
+                                                  <block type="text" id="191">
+                                                    <field name="TEXT">左に曲げる</field>
+                                                  </block>
+                                                </value>
+                                                <next>
+                                                  <block type="hardware_smalrubot_v3_action_with_sec" id="281" inline="true">
+                                                    <field name="ACTION">turn_left</field>
+                                                    <value name="SEC">
+                                                      <block type="math_number" id="282">
+                                                        <field name="NUM">0.75</field>
+                                                      </block>
+                                                    </value>
+                                                    <next>
+                                                      <block type="control_await" id="194">
+                                                        <next>
+                                                          <block type="looks_say" id="195" inline="true">
+                                                            <value name="TEXT">
+                                                              <block type="text" id="196">
+                                                                <field name="TEXT">右に曲げる</field>
+                                                              </block>
+                                                            </value>
+                                                            <next>
+                                                              <block type="hardware_smalrubot_v3_action_with_sec" id="283" inline="true">
+                                                                <field name="ACTION">turn_right</field>
+                                                                <value name="SEC">
+                                                                  <block type="math_number" id="284">
+                                                                    <field name="NUM">0.75</field>
+                                                                  </block>
+                                                                </value>
+                                                                <next>
+                                                                  <block type="control_await" id="199">
+                                                                    <next>
+                                                                      <block type="looks_say" id="200" inline="true">
+                                                                        <value name="TEXT">
+                                                                          <block type="text" id="201">
+                                                                            <field name="TEXT"></field>
+                                                                          </block>
+                                                                        </value>
+                                                                      </block>
+                                                                    </next>
+                                                                  </block>
+                                                                </next>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </statement>
+                    <next>
+                      <block type="control_times" id="202" inline="true">
+                        <value name="COUNT">
+                          <block type="math_number" id="203">
+                            <field name="NUM">2</field>
+                          </block>
+                        </value>
+                        <statement name="DO">
+                          <block type="hardware_smalrubot_v3_led_turn_on_or_off" id="346">
+                            <field name="LOR">left</field>
+                            <field name="OOO">turn_on</field>
+                            <next>
+                              <block type="looks_say" id="205" inline="true">
+                                <value name="TEXT">
+                                  <block type="text" id="206">
+                                    <field name="TEXT">左のLED・センサー</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="control_sleep" id="207" inline="true">
+                                    <value name="SEC">
+                                      <block type="math_number" id="208">
+                                        <field name="NUM">1</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="control_times" id="209" inline="true">
+                                        <value name="COUNT">
+                                          <block type="math_number" id="210">
+                                            <field name="NUM">20</field>
+                                          </block>
+                                        </value>
+                                        <statement name="DO">
+                                          <block type="looks_say" id="211" inline="true">
+                                            <value name="TEXT">
+                                              <block type="hardware_smalrubot_v3_sensor_value" id="367">
+                                                <field name="LOR">left</field>
+                                              </block>
+                                            </value>
+                                            <next>
+                                              <block type="control_await" id="213"></block>
+                                            </next>
+                                          </block>
+                                        </statement>
+                                        <next>
+                                          <block type="hardware_smalrubot_v3_led_turn_on_or_off" id="347">
+                                            <field name="LOR">left</field>
+                                            <field name="OOO">turn_off</field>
+                                            <next>
+                                              <block type="hardware_smalrubot_v3_led_turn_on_or_off" id="348">
+                                                <field name="LOR">right</field>
+                                                <field name="OOO">turn_on</field>
+                                                <next>
+                                                  <block type="looks_say" id="216" inline="true">
+                                                    <value name="TEXT">
+                                                      <block type="text" id="217">
+                                                        <field name="TEXT">右のLED・センサー</field>
+                                                      </block>
+                                                    </value>
+                                                    <next>
+                                                      <block type="control_sleep" id="218" inline="true">
+                                                        <value name="SEC">
+                                                          <block type="math_number" id="219">
+                                                            <field name="NUM">1</field>
+                                                          </block>
+                                                        </value>
+                                                        <next>
+                                                          <block type="control_times" id="220" inline="true">
+                                                            <value name="COUNT">
+                                                              <block type="math_number" id="221">
+                                                                <field name="NUM">20</field>
+                                                              </block>
+                                                            </value>
+                                                            <statement name="DO">
+                                                              <block type="looks_say" id="222" inline="true">
+                                                                <value name="TEXT">
+                                                                  <block type="hardware_smalrubot_v3_sensor_value" id="366">
+                                                                    <field name="LOR">right</field>
+                                                                  </block>
+                                                                </value>
+                                                                <next>
+                                                                  <block type="control_await" id="224"></block>
+                                                                </next>
+                                                              </block>
+                                                            </statement>
+                                                            <next>
+                                                              <block type="hardware_smalrubot_v3_led_turn_on_or_off" id="349">
+                                                                <field name="LOR">right</field>
+                                                                <field name="OOO">turn_off</field>
+                                                                <next>
+                                                                  <block type="looks_say" id="226" inline="true">
+                                                                    <value name="TEXT">
+                                                                      <block type="text" id="227">
+                                                                        <field name="TEXT">おしまい</field>
+                                                                      </block>
+                                                                    </value>
+                                                                  </block>
+                                                                </next>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </statement>
+                      </block>
+                    </next>
+                  </block>
+                </statement>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>

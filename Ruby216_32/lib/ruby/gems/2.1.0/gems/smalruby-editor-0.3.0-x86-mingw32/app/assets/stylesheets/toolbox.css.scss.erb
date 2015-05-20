@@ -1,0 +1,54 @@
+<%
+  require 'smalruby_editor'
+  colors = SmalrubyEditor::COLORS
+%>
+div.blocklyTreeRoot {
+    padding: 0;
+
+    .blocklyTreeRow {
+        margin-bottom: 1px;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        color: white;
+
+        span.blocklyTreeIcon, span.blocklyTreeLabel {
+          font-size: 14px;
+        }
+    }
+
+    .blocklyTreeRow.blocklyTreeSelected {
+        font-weight: bold;
+    }
+}
+
+<%
+  hues = [
+    colors[:motion],
+    colors[:looks],
+    colors[:sound],
+    colors[:pen],
+    colors[:data],
+    colors[:events],
+    colors[:control],
+    colors[:sensing],
+    colors[:operators],
+    colors[:etc],
+  ]
+
+  colors = hues.map { |h|
+    [SmalrubyEditor.hsv_to_rgb(h, 100, 80),
+     SmalrubyEditor.hsv_to_rgb(h, 100, 100)]
+  }
+
+  colors.each.with_index(1) do |(color, active_color), index|
+%>
+div.blocklyTreeRoot > div:nth-child(2) > div:nth-child(<%= index %>)[aria-level="1"] {
+    .blocklyTreeRow {
+        background-color: #<%= color %> !important;
+    }
+
+    .blocklyTreeRow.blocklyTreeSelected {
+        background-color: #<%= active_color %> !important;
+    }
+}
+<% end %>

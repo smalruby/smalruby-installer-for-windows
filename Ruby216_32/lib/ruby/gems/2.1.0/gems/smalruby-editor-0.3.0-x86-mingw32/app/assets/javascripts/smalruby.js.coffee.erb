@@ -1,0 +1,249 @@
+<%
+  require 'smalruby_editor'
+  require 'smalruby_editor/blockly_message_helper'
+%>
+
+window.SmalrubyEditor = {}
+window.changed = false
+window.textEditor = null
+window.blockMode = true
+
+window.successMessage = (title, msg = '', selector = '#messages') ->
+  html = $('<div class="alert alert-success" style="display: none">')
+    .append("<h4><i class=\"icon-star\"></i>#{title}</h4>")
+    .append(msg)
+  $(selector).append(html)
+  html.fadeIn('slow')
+    .delay(3000)
+    .fadeOut('slow')
+  return
+
+window.errorMessage = (msg, selector = '#messages') ->
+  html = $('<div class="alert alert-error" style="display: none">')
+    .append('<button type="button" class="close" data-dismiss="alert">×</button>')
+    .append("<h4><i class=\"icon-exclamation-sign\"></i>#{<%= bm('common_error') %>}</h4>")
+    .append(msg)
+  $(selector).append(html)
+  html.fadeIn('slow')
+  return
+
+window.clearMessages = (selector = '#messages') ->
+  $(selector).empty()
+
+window.Smalruby =
+  Models: {}
+  Collections: {}
+  Views: {}
+  Routers: {}
+  Preferences: {}
+
+  username: null
+
+  initialize: ->
+    $.ajaxSetup
+      headers:
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+
+    # HACK: Underscoreのテンプレートの\<\%, \%\>はHamlと組み合わせたときに
+    #   HTML要素の属性がHamlによってエスケープされてしまうため使いにく
+    #   い。そこで、それぞれ{{, }}に変更する。
+    _.extend(_.templateSettings, {
+      escape: /{{-([\s\S]+?)}}/
+      evaluate: /{{([\s\S]+?)}}/
+      interpolate: /{{=([\s\S]+?)}}/
+    })
+
+    @Collections.CharacterSet = new Smalruby.CharacterSet()
+
+    @Views.MainMenuView = new Smalruby.MainMenuView()
+    @Views.SigninModalView = new Smalruby.SigninModalView
+      el: $('#signin-modal')
+    @Views.CharacterSelectorView = new Smalruby.CharacterSelectorView
+      model: @Collections.CharacterSet
+    @Views.CharacterModalView = new Smalruby.CharacterModalView
+      el: $('#character-modal')
+    @Views.LoadModalView = new Smalruby.LoadModalView
+      el: $('#load-modal')
+    @Views.ResetModalView = new Smalruby.ResetModalView
+      el: $('#reset-modal')
+    @Views.PreferenceModalView = new Smalruby.PreferenceModalView
+      el: $('#preference-modal')
+
+    Smalruby.downloading = false
+    window.onbeforeunload = (event) ->
+      if !Smalruby.downloading && window.changed
+        return <%= bm('.will_disapper_your_program') %>
+      else
+        Smalruby.downloading = false
+        return
+
+    Blockly.HSV_SATURATION = 1.0
+    Blockly.HSV_VALUE = 0.8
+
+    Blockly.inject document.getElementById('blockly-div'),
+      path: '/blockly/'
+      toolbox: document.getElementById('toolbox')
+      trashcan: true
+      comments: false
+
+    @hideEmptyCategory()
+
+    @blocklyFirst = true
+    @blocklyLoading = false
+    Blockly.getMainWorkspace().addChangeListener =>
+      Smalruby.changedAfterTranslating = true
+
+      # HACK: Blocklyを初期化後に一回だけChangeListenerが呼び出させれ
+      # る。ここではそれを無視している。
+      if @blocklyFirst
+        @blocklyFirst = false
+        return
+
+      # HACK: XMLの読み込み後に一回だけChangeListenerが呼び出させれ
+      # る。ここではそれを無視している。
+      if @blocklyLoading
+        @blocklyLoading = false
+        return
+
+      window.changed = true
+
+    window.textEditor = textEditor = ace.edit('text-editor')
+    textEditor.setTheme('ace/theme/clouds')
+    textEditor.setShowInvisibles(true)
+    textEditor.gotoLine(0, 0)
+    textEditor.on 'change', (e) =>
+      unless @translating
+        window.changed = true
+        Smalruby.changedAfterTranslating = true
+
+    session = textEditor.getSession()
+    session.setMode('ace/mode/ruby')
+    session.setTabSize(2)
+    session.setUseSoftTabs(true)
+
+    @addCharacterFromBeginning()
+
+  loadXml: (data, workspace = Blockly.mainWorkspace) ->
+    xml = Blockly.Xml.textToDom(data)
+    workspace.clear()
+    chars = []
+    i = 0
+    while (xmlChild = xml.childNodes[i])
+      if xmlChild.nodeName.toLowerCase() == 'character'
+        c = new Smalruby.Character
+          name: xmlChild.getAttribute('name')
+          costumes: xmlChild.getAttribute('costumes').split(',')
+          x: parseInt(xmlChild.getAttribute('x'), 10)
+          y: parseInt(xmlChild.getAttribute('y'), 10)
+          angle: parseInt(xmlChild.getAttribute('angle'), 10)
+          rotationStyle: xmlChild.getAttribute('rotation_style') || 'free'
+        chars.push(c)
+      i++
+    Smalruby.Collections.CharacterSet.reset(chars)
+    Blockly.Xml.domToWorkspace(workspace, xml)
+
+  dumpXml: (workspace = Blockly.mainWorkspace, charSet = Smalruby.Collections.CharacterSet) ->
+    xmlDom = Blockly.Xml.workspaceToDom(workspace)
+    blocklyDom = xmlDom.firstChild
+    charSet.each (c) ->
+      e = goog.dom.createDom('character')
+      e.setAttribute('x', c.get('x'))
+      e.setAttribute('y', c.get('y'))
+      e.setAttribute('name', c.get('name'))
+      e.setAttribute('costumes', c.get('costumes').join(','))
+      e.setAttribute('angle', c.get('angle'))
+      rotationStyle = c.get('rotationStyle')
+      if rotationStyle != 'free'
+        e.setAttribute('rotation_style', rotationStyle)
+      xmlDom.insertBefore(e, blocklyDom)
+    Blockly.Xml.domToPrettyText(xmlDom)
+
+  # テキスト入力欄のEnter(Return)キーを無視する
+  ignoreEnterKey: (el) ->
+    el.find('input[type=text]').keypress (e) ->
+      e = window.event if !e
+      if e.keyCode == 13
+        false
+      else
+        true
+
+  # リセットする
+  reset: ->
+    @blocklyLoading = true
+    Blockly.mainWorkspace.clear()
+    @Collections.CharacterSet.reset()
+    $('#filename').val('')
+    window.textEditor.getSession().getDocument().setValue('')
+    window.textEditor.moveCursorTo(0, 0)
+    @addCharacterFromBeginning()
+    window.changed = false
+
+  # 国際化したメッセージを取得する
+  bm: (name) ->
+    msg = Blockly.Msg[name]
+    if (typeof msg) == 'string'
+      msg
+    else
+      name
+
+  addCharacterFromBeginning: ->
+    if !@isEnabled('disabled_add_character_from_beginning')
+      constume = 'cat1.png'
+      c = new Smalruby.Character
+        name: @Collections.CharacterSet.uniqueName(constume)
+        costumes: [constume]
+        x: 200
+        y: 200
+      @Collections.CharacterSet.add(c)
+      @Views.CharacterSelectorView.prevBlock = null
+      @Views.CharacterSelectorView.addBlock_(c)
+      window.changed = false
+
+  setPreferences: (preferences) ->
+    @Preferences = preferences
+    window.textEditor.setReadOnly(@isEnabled('enabled_readonly_ruby_mode'))
+    if @isEnabled('disabled_new_character')
+      $('#add-character-item').hide()
+    else
+      $('#add-character-item').show()
+    @changedAfterTranslating = true
+    @reloadToolbox()
+
+  isEnabled: (name) ->
+    @Preferences[name] == true || @Preferences[name] == 'true' || @Preferences[name] == '1'
+
+  reloadToolbox: ->
+    $('body').block
+      message: <%= bm('common.processing') %>
+
+    unblock = =>
+      $('body').unblock()
+      null # HACK: if return unblock(), does not call fail().
+    dfr = $.Deferred()
+    $.ajax
+      url: '/toolbox'
+      type: 'GET'
+      success: (data, textStatus, jqXHR) -> dfr.resolve(data)
+      error: dfr.reject
+    dfr.promise()
+      .then (data) =>
+        Blockly.updateToolbox(data)
+        @hideEmptyCategory()
+      .then(unblock, unblock)
+      .fail =>
+        errorMessage(<%= bm('.error') %>)
+
+  hideEmptyCategory: ->
+    i = 1
+    for node in Blockly.getMainWorkspace().options.languageTree.childNodes
+      do (node) =>
+        if node.tagName
+          if node.getElementsByTagName('block').length == 0 && node.getAttribute('custom') == null
+            $("div.blocklyTreeRoot > div:nth-child(2) > div:nth-child(#{i})[aria-level=\"1\"]").hide()
+          i++
+
+$(document).ready ->
+  Smalruby.initialize()
+
+  if Smalruby.username == null && Smalruby.isEnabled('enabled_must_signin')
+    Smalruby.Views.SigninModalView.render()

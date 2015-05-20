@@ -1,0 +1,39 @@
+#load-modal{:class => "#{modal_css_class}", :tabindex => "-1",
+            :role => "dialog", :"aria-hidden" => "true"}
+  .modal-body
+    %ul.thumbnails{:id => "load-modal-local-programs",
+                   :class => "list-programs"}
+
+    .page-header
+      %h3
+        %i.icon-th-large
+        = t('.preset_programs')
+    %ul.thumbnails{:id => "load-modal-demo-programs",
+                   :class => "list-programs"}
+
+    .page-header
+      %h3
+        %i.icon-search
+        = t('.find_program')
+    %ul.thumbnails{:class => "list-programs"}
+      %li
+        %a#load-modal-find-from-computer.thumbnail
+          %h1.icon
+            %i.icon-folder-open-alt
+          %blockquote
+            %p
+              = t('.computer')
+            %small
+              Computer
+
+  .modal-footer
+    .pull-left
+      %button#load-modal-remix-button.btn<
+        %i.icon-refresh
+        = t('.remix')
+    %button.btn{:"data-dismiss" => "modal", :"aria-hidden" => "true"}<
+      %i.icon-remove
+      = t('common.cancel')
+    %button#load-modal-ok-button{:class => "btn btn-primary"}<
+      %i.icon-circle-blank
+      = t('common.ok')

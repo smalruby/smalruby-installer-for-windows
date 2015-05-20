@@ -1,0 +1,393 @@
+<%
+  require 'smalruby_editor'
+  require 'smalruby_editor/blockly_message_helper'
+%>
+
+# navigation menu view
+Smalruby.MainMenuView = Backbone.View.extend
+  el: '#main-menu'
+
+  events:
+    'click #block-mode-button': 'onBlockMode'
+    'click #ruby-mode-button': 'onRubyMode'
+    'click #run-button': 'onRun'
+    'click #download-button': 'onDownload'
+    'click #load-local-button': 'onLoadLocal'
+    'click #load-button': 'onLoad'
+    'click #save-button': 'onSave'
+    'click #check-button': 'onCheck'
+    'click #reset-button': 'onReset'
+    'click #preference-button': 'onPreference'
+    'click #signin-button': 'onSignin'
+    'click #signout-button': 'onSignout'
+    'click #username-button': 'onUsername'
+
+  initialize: ->
+    $('#filename').keypress (e) ->
+      e = window.event if !e
+      if e.keyCode == 13
+        $('#save-button').click()
+        false
+      else
+        true
+
+    $('#file-form').fileupload
+      dataType: 'json'
+      done: (e, data) =>
+        @load(data.result.source_code)
+
+    # HACK: if don't do below, can't open submenu on Chromium on Raspberry Pi
+    $('.dropdown-toggle').dropdown()
+
+  onBlockMode: (e) ->
+    e.preventDefault()
+
+    return if window.blockMode
+
+    unless Smalruby.changedAfterTranslating
+      window.blockMode = true
+      $('#tabs a[href="#block-tab"]').tab('show')
+      return
+
+    @blockUI
+      title:
+        """
+        <i class="icon-filter"></i>
+        #{<%= bm('.block_mode_blockui_title') %>}
+        """
+      message: <%= bm('.block_mode_blockui_message') %>
+
+    sourceCode = new Smalruby.SourceCode()
+    sourceCode.toBlocks()
+      .then (data) ->
+        window.blockMode = true
+        $('#tabs a[href="#block-tab"]').tab('show')
+        if data.length > 0
+          Smalruby.blocklyLoading = true
+          Smalruby.translating = true
+          Smalruby.loadXml(data)
+          Smalruby.translating = false
+          Smalruby.changedAfterTranslating = false
+      .then(@unblockUI, @unblockUI)
+      .fail ->
+        window.errorMessage(<%= bm('.block_mode_error') %>)
+
+  onRubyMode: (e) ->
+    e.preventDefault()
+
+    return unless window.blockMode
+
+    window.blockMode = false
+    $('#tabs a[href="#ruby-tab"]').tab('show')
+
+    return unless Smalruby.changedAfterTranslating
+
+    data = Blockly.Ruby.workspaceToCode(Blockly.getMainWorkspace())
+    Smalruby.translating = true
+    window.textEditor.getSession().getDocument().setValue(data)
+    Smalruby.translating = false
+    Smalruby.changedAfterTranslating = false
+    window.textEditor.moveCursorTo(0, 0)
+    window.textEditor.focus()
+
+  onRun: (e) ->
+    e.preventDefault()
+
+    sourceCode = @getSourceCode()
+
+    xmlSourceCode =
+      new Smalruby.SourceCode({ filename: sourceCode.getRbxmlFilename() })
+
+    clearMessages()
+
+    @blockUI
+      title:
+        """
+        <i class="icon-play"></i>
+        #{<%= bm('.run_blockui_title') %>}
+        """
+      message: <%= bm('.run_blockui_message') %>
+      notice: <%= bm('.run_blockui_notice') %>
+
+    errorMsg = <%= bm('.run_error_cant_run') %>
+    sourceCode.save2()
+      .then (data) ->
+        sourceCode.write()
+      .then (data) =>
+        @confirmOverwrite_.call @, data, sourceCode, ->
+          errorMsg = <%= bm('.run_error_cancel_to_run') %>
+      .then ->
+        Smalruby.savedFilename = sourceCode.get('filename')
+        window.changed = false
+        sourceCode.check()
+      .then (data) ->
+        if data.length > 0
+          for errorInfo in data
+            do (errorInfo) ->
+              msg = "#{errorInfo.row}#{<%= bm('.common_lines') %>}"
+              if errorInfo.column > 0
+                msg += "#{<%= bm('.common_comma') %>}#{errorInfo.column}#{<%= bm('.common_letters') %>}"
+              window.errorMessage(msg + ": #{errorInfo.message}")
+          $.Deferred().reject().promise()
+      .then ->
+        xmlSourceCode.save2()
+      .then ->
+        xmlSourceCode.write(true)
+      .then ->
+        sourceCode.run()
+      .then (data) ->
+        if data.length > 0
+          for errorInfo in data
+            do (errorInfo) ->
+              msg = "#{errorInfo.row}#{<%= bm('.common_lines') %>}"
+              if errorInfo.column > 0
+                msg += "#{<%= bm('.common_comma') %>}#{errorInfo.column}#{<%= bm('.common_letters') %>}"
+              errorMessage(msg + ": #{errorInfo.message}")
+          $.Deferred().reject().promise()
+      .then(@unblockUI, @unblockUI)
+      .fail ->
+        errorMessage(errorMsg)
+
+  onDownload: (e) ->
+    e.preventDefault()
+
+    sourceCode = @getSourceCode()
+
+    clearMessages()
+
+    @blockUI
+      title: <%= bm('.download_blockui_title') %>
+      message: <%= bm('.download_blockui_message') %>
+
+    sourceCode.save2()
+      .then (data) ->
+        window.changed = false
+        window.successMessage(goog.getMsg(<%= bm('.download_succeeded') %>,
+                              { filename: sourceCode.get('filename') }))
+        Smalruby.downloading = true
+        $('#download-link').click()
+      .then(@unblockUI, @unblockUI)
+      .fail ->
+        window.errorMessage(<%= bm('.download_error') %>)
+
+  onLoadLocal: (e) ->
+    e.preventDefault()
+
+    # TODO: window.changed -> Smalruby.Models.SourceCode.changed
+    if window.changed
+      return unless confirm(<%= bm('.load_confirm') %>)
+
+    Smalruby.Views.LoadModalView.render()
+
+  onLoad: (e) ->
+    e.preventDefault()
+
+    # TODO: window.changed -> Smalruby.Models.SourceCode.changed
+    if window.changed
+      return unless confirm(<%= bm('.load_confirm') %>)
+    $('input#load-file[name="source_code[file]"]').click()
+
+  onSave: (e) ->
+    e.preventDefault()
+
+    filename = $.trim($('#filename').val())
+    if filename.length <= 0
+      window.errorMessage(<%= bm('.save_error_no_name') %>)
+      $('#filename').focus()
+      return
+
+    sourceCode = @getSourceCode()
+    if window.blockMode
+      sourceCode =
+        new Smalruby.SourceCode({ filename: sourceCode.getRbxmlFilename() })
+
+    clearMessages()
+
+    @blockUI
+      title: <%= bm('.save_blockui_title') %>
+      message: <%= bm('.save_blockui_message') %>
+      notice: goog.getMsg(<%= bm('.save_blockui_notice') %>,
+                          { filename: sourceCode.get('filename') })
+
+    errorMsg = <%= bm('.save_error_message') %>
+    sourceCode.save2()
+      .then (data) ->
+        sourceCode.write()
+      .then (data) =>
+        @confirmOverwrite_.call @, data, sourceCode, ->
+          errorMsg = <%= bm('.save_canceled') %>
+      .then(@unblockUI, @unblockUI)
+      .done ->
+        Smalruby.savedFilename = sourceCode.get('filename')
+        window.changed = false
+        window.successMessage(<%= bm('.save_succeeded') %>)
+      .fail ->
+        window.errorMessage(errorMsg)
+
+  onCheck: (e) ->
+    e.preventDefault()
+
+    clearMessages()
+
+    sourceCode = @getSourceCode()
+
+    @blockUI
+      title: <%= bm('.check_blockui_title') %>
+      message: <%= bm('.check_blockui_message') %>
+      notice: <%= bm('.check_blockui_notice') %>
+
+    sourceCode.check()
+      .then (data) ->
+        if data.length == 0
+          window.successMessage(<%= bm('.check_succeeded') %>, <%= bm('.check_succeeded_notice') %>)
+        else
+          for errorInfo in data
+            do (errorInfo) ->
+              msg = "#{errorInfo.row}#{<%= bm('.common_lines') %>}"
+              if errorInfo.column > 0
+                msg += "#{<%= bm('.common_comma') %>}#{errorInfo.column}#{<%= bm('.common_letters') %>}"
+              window.errorMessage(msg + ": #{errorInfo.message}")
+      .then(@unblockUI, @unblockUI)
+      .fail ->
+        errorMessage(<%= bm('.check_error') %>)
+
+  onReset: (e) ->
+    e.preventDefault()
+
+    if window.changed
+      Smalruby.Views.ResetModalView.render()
+    else
+      Smalruby.reset()
+    true
+
+  onPreference: (e) ->
+    e.preventDefault()
+
+    Smalruby.Views.PreferenceModalView.render()
+
+  onSignin: (e) ->
+    e.preventDefault()
+
+    Smalruby.Views.SigninModalView.render()
+
+  onSignout: (e) ->
+    e.preventDefault()
+
+    $.ajax({
+      url: '/signout'
+      type: 'DELETE'
+    })
+      .then(
+        (data) ->
+          Smalruby.setPreferences(data)
+          Smalruby.username = null
+          $('#signin-button').show()
+          $('.signed-in-menu').hide()
+          $('#username-label').text('')
+          $('#username-button').hide()
+          successMessage(<%= bm('.signout_succeeded') %>)
+
+          if Smalruby.isEnabled('enabled_must_signin')
+            Smalruby.Views.SigninModalView.render()
+        ->
+          errorMessage(<%= bm('.signout_error') %>)
+      )
+
+  onUsername: (e) ->
+    e.preventDefault()
+
+  getFilename: ->
+    $.trim($('#filename').val())
+
+  getSourceCode: ->
+    sourceCode = new Smalruby.SourceCode()
+    $('#filename').val(sourceCode.get('filename'))
+    sourceCode
+
+  blockUI: (options) ->
+    message = ''
+    if options.title
+      message +=
+        """
+        <h3>
+          #{options.title}
+        </h3>
+        """
+
+    if options.message || options.notice
+      part = ''
+      if options.message
+        part +=
+          """
+          <p>
+            #{options.message}
+          </p>
+          """
+      if options.notice
+        part +=
+          """
+          <small>
+            #{options.notice}
+          </small>
+          """
+
+      message +=
+        """
+        <blockquote>
+          #{part}
+        </blockquote>
+        """
+
+    $.blockUI
+      message: message
+      css:
+        border: 'none'
+        'text-align': 'left'
+        'padding-left': '2em'
+
+  unblockUI: ->
+    $.unblockUI()
+
+  confirmOverwrite_: (data, sourceCode, canceled = $.noop) ->
+    if data.source_code.error
+      if sourceCode.get('filename') == Smalruby.savedFilename ||
+         confirm(goog.getMsg(<%= bm('.common_confirm_overwrite') %>,
+                             { filename: sourceCode.get('filename') }))
+        sourceCode.write(true)
+      else
+        canceled.call()
+        $.Deferred().reject().promise()
+
+  load: (info) ->
+    if info.error
+      window.errorMessage(goog.getMsg(<%= bm('.load_error') %>,
+                          { filename: info.filename, error: info.error }))
+    else
+      clearMessages()
+
+      filename = info.filename
+      if filename.match(/\.xml$/)
+        unless window.blockMode
+          window.blockMode = true
+          $('#tabs a[href="#block-tab"]').tab('show')
+
+        filename = filename.replace(/(\.rb)?\.xml$/, '.rb')
+        Smalruby.blocklyLoading = true
+        Smalruby.loadXml(info.data)
+        info.data = Blockly.Ruby.workspaceToCode(Blockly.getMainWorkspace())
+      else
+        Smalruby.Collections.CharacterSet.reset()
+        Blockly.mainWorkspace.clear()
+
+        if window.blockMode
+          window.blockMode = false
+          $('#tabs a[href="#ruby-tab"]').tab('show')
+          window.textEditor.focus()
+
+      $('#filename').val(filename)
+      window.textEditor.getSession().getDocument().setValue(info.data)
+      window.textEditor.moveCursorTo(0, 0)
+      # TODO: window.changed -> Smalruby.Models.SourceCode.changed
+      window.changed = false
+      Smalruby.changedAfterTranslating = true
+      window.successMessage(<%= bm('.load_succeeded') %>)

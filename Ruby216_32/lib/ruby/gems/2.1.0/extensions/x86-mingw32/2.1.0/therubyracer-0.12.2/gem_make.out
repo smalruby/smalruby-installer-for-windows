@@ -1,0 +1,44 @@
+C:/smalruby_216/Ruby216_32/bin/ruby.exe extconf.rb
+checking for main() in -lpthread... no
+checking for v8.h... no
+*** extconf.rb failed ***
+Could not create Makefile due to some reason, probably lack of necessary
+libraries and/or headers.  Check the mkmf.log file for more details.  You may
+need configuration options.
+
+Provided configuration options:
+	--with-opt-dir
+	--without-opt-dir
+	--with-opt-include
+	--without-opt-include=${opt-dir}/include
+	--with-opt-lib
+	--without-opt-lib=${opt-dir}/lib
+	--with-make-prog
+	--without-make-prog
+	--srcdir=.
+	--curdir
+	--ruby=C:/smalruby_216/Ruby216_32/bin/ruby
+	--with-pthreadlib
+	--without-pthreadlib
+	--enable-debug
+	--disable-debug
+	--with-v8-dir
+	--without-v8-dir
+	--with-v8-include
+	--without-v8-include=${v8-dir}/include
+	--with-v8-lib
+	--without-v8-lib=${v8-dir}/lib
+C:/smalruby_216/Ruby216_32/lib/ruby/gems/2.1.0/gems/libv8-3.16.14.3/ext/libv8/location.rb:50:in `configure': You have chosen to use the version of V8 found on your system (Libv8::Location::System::NotFoundError)
+and *not* the one that is bundle with the libv8 rubygem. However,
+it could not be located. please make sure you have a version of
+v8 that is compatible with 3.16.14.3 installed. You may
+need to special --with-v8-dir options if it is in a non-standard
+location
+
+thanks,
+The Mgmt
+
+	from C:/smalruby_216/Ruby216_32/lib/ruby/gems/2.1.0/gems/libv8-3.16.14.3/lib/libv8.rb:7:in `configure_makefile'
+	from extconf.rb:32:in `<main>'
+
+extconf failed, exit code 1

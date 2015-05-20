@@ -1,0 +1,13 @@
+C:/smalruby_216/Ruby216_32/bin/ruby.exe extconf.rb
+creating Makefile
+指定されたパスが見つかりません。
+指定されたパスが見つかりません。
+指定されたパスが見つかりません。
+C:/smalruby_216/Ruby216_32/lib/ruby/gems/2.1.0/gems/libv8-3.16.14.7/ext/libv8/builder.rb:68:in `setup_python!': libv8 requires python 2 to be installed in order to build, but it is currently not available (RuntimeError)
+	from C:/smalruby_216/Ruby216_32/lib/ruby/gems/2.1.0/gems/libv8-3.16.14.7/ext/libv8/builder.rb:52:in `block in build_libv8!'
+	from C:/smalruby_216/Ruby216_32/lib/ruby/gems/2.1.0/gems/libv8-3.16.14.7/ext/libv8/builder.rb:49:in `chdir'
+	from C:/smalruby_216/Ruby216_32/lib/ruby/gems/2.1.0/gems/libv8-3.16.14.7/ext/libv8/builder.rb:49:in `build_libv8!'
+	from C:/smalruby_216/Ruby216_32/lib/ruby/gems/2.1.0/gems/libv8-3.16.14.7/ext/libv8/location.rb:24:in `install!'
+	from extconf.rb:7:in `<main>'
+
+extconf failed, exit code 1

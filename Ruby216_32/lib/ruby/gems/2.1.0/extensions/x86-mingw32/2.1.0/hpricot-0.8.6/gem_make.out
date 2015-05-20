@@ -1,0 +1,53 @@
+C:/smalruby_216/Ruby216_32/bin/ruby.exe extconf.rb
+checking for main() in -lc... no
+creating Makefile
+
+make "DESTDIR=" clean
+
+make "DESTDIR="
+generating hpricot_scan-i386-mingw32.def
+compiling hpricot_css.c
+hpricot_css.c: In function 'hpricot_css':
+hpricot_css.c:3407:9: warning: comparison between pointer and integer [enabled by default]
+hpricot_css.c:3407:9: warning: 'eof' may be used uninitialized in this function [-Wuninitialized]
+hpricot_css.rl:96:16: note: 'eof' was declared here
+compiling hpricot_scan.c
+hpricot_common.rl: In function 'hpricot_scan':
+hpricot_common.rl:73:20: warning: ordered comparison of pointer with integer zero [-Wextra]
+NONE:12:19: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:73:14: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:73:14: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:73:16: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:46:4: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:46:4: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:51:20: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:51:14: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:51:14: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:51:16: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:56:20: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:56:14: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:56:14: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:56:16: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:61:14: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:61:14: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_common.rl:61:16: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_scan.rl:619:14: warning: ordered comparison of pointer with integer zero [-Wextra]
+hpricot_scan.rl: In function 'make_hpricot_struct':
+hpricot_scan.rl:803:3: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+hpricot_scan.rl: At top level:
+hpricot_scan.rl:255:1: warning: 'hpricot_ele_set_raw' defined but not used [-Wunused-function]
+hpricot_scan.rl:255:1: warning: 'hpricot_ele_get_raw' defined but not used [-Wunused-function]
+hpricot_scan.rl:256:1: warning: 'hpricot_ele_set_parent' defined but not used [-Wunused-function]
+hpricot_scan.rl:256:1: warning: 'hpricot_ele_clear_parent' defined but not used [-Wunused-function]
+hpricot_scan.rl:256:1: warning: 'hpricot_ele_get_parent' defined but not used [-Wunused-function]
+hpricot_scan.rl:258:1: warning: 'hpricot_ele_set_etag' defined but not used [-Wunused-function]
+hpricot_scan.rl:258:1: warning: 'hpricot_ele_clear_etag' defined but not used [-Wunused-function]
+hpricot_scan.rl:258:1: warning: 'hpricot_ele_get_etag' defined but not used [-Wunused-function]
+hpricot_scan.rl:259:1: warning: 'hpricot_ele_set_children' defined but not used [-Wunused-function]
+hpricot_scan.rl:259:1: warning: 'hpricot_ele_clear_children' defined but not used [-Wunused-function]
+hpricot_scan.rl:259:1: warning: 'hpricot_ele_get_children' defined but not used [-Wunused-function]
+linking shared-object hpricot_scan.so
+
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 hpricot_scan.so ./.gem.20150520-2404-1w8ou86
+installing default hpricot_scan libraries
