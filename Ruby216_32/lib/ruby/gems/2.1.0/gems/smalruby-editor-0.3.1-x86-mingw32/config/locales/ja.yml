@@ -1,0 +1,99 @@
+ja:
+  common:
+    smalruby_editor: "スモウルビー v%{version}"
+    "ok": "決めた！"
+    cancel: "やめる"
+    reset: &reset "リセット"
+    login: &login "ログイン"
+    name: "名前"
+    processing: "処理中"
+
+  controllers:
+    source_codes:
+      not_ruby_program: "はRubyのプログラムではありません"
+      not_exist: "はありません"
+      exist: "すでに同じ名前のプログラムがあります"
+
+  toolbox_names:
+    default: "通常"
+    smalrubot_s1: "スモウルボットS1"
+    smalrubot_v3: "スモウルボットV3"
+
+  helpers:
+    label:
+      "user[preferences]":
+        toolbox_name: "ツールボックスの種類"
+
+        toolbox__default__enabled_hardware_blocks: "ハードウェアブロックを使う"
+        toolbox__default__enabled_smalrubot_s1_blocks: "スモウルボットS1のブロックを使う"
+        toolbox__default__enabled_smalrubot_v3_blocks: "スモウルボットV3のブロックを使う"
+
+        disabled_add_character_from_beginning: "最初にキャラクターを追加しない"
+        disabled_new_character: "キャラクターの追加を禁止する"
+        enabled_readonly_ruby_mode: "プログラムを直接入力できないようにする"
+        enabled_must_signin: "ログインしないと使えないようにする"
+        hardware_port: "ハードウェアの接続先"
+
+  editor:
+    index:
+      block: "ブロック"
+      msg_input_program_name: "プログラムの名前を入れてね（例：01.rb）"
+      run: "実行"
+      download: "ダウンロード"
+      load: "ロード"
+      save: "セーブ"
+      check: "チェック"
+      reset: *reset
+      preference: "設定"
+      logout: "ログアウト"
+      login: *login
+
+    block_tab:
+      character: "キャラクター"
+      new_character: "新しいキャラクター"
+      direction_parameter: "向き:"
+      stage: "ステージ"
+
+    toolbox:
+      motion: "■動き"
+      looks: "★見た目"
+      sound: "♪音"
+      pen: "●ペン"
+      data: "☼データ"
+      events: "♣イベント"
+      control: "◆制御"
+      sensing: "◎調べる"
+      operators: "演算"
+      etc: "♠その他"
+      hello: "こんにちは！"
+      world: "あいうえお"
+      text: "文章"
+
+    character_modal:
+      name: "名前"
+      x_position: "X座標"
+      y_position: "Y座標"
+      msg_input_name: "car1やball1など"
+      direction: "向き"
+
+    load_modal:
+      preset_programs: "いろいろなプログラム"
+      find_program: "プログラムをさがす"
+      computer: "このコンピュータ"
+      remix: "リミックス"
+
+    reset_modal:
+      title: "本当にリセットしますか？"
+      message: "作成中のプログラムが消えてしまうよ！"
+
+    preference_modal:
+      title: "設定"
+
+    signin_modal:
+      message: "あなたの名前をいれて、<br />ほかの人のプログラムとまざらないようにしよう♪"
+      username_placeholder: "名前、生徒番号、ニックネームなど"
+
+  users:
+    preferences:
+      toolbox: "ツールボックス"
+      general: "一般"
