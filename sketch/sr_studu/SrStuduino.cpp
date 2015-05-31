@@ -2,7 +2,9 @@
 
 typedef Smalrubot base;
 
-SrStuduino::SrStuduino() {
+SrStuduino::SrStuduino(int neo_pixel_num, int neo_pixel_pin) :
+  Smalrubot(neo_pixel_num, neo_pixel_pin)
+{
 }
 
 /*

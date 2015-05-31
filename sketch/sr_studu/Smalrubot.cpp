@@ -5,14 +5,41 @@
 #include "Arduino.h"
 #include "Smalrubot.h"
 
-Smalrubot::Smalrubot(){
+Smalrubot::Smalrubot(int neo_pixel_num, int neo_pixel_pin) :
+  pixels(neo_pixel_num, neo_pixel_pin, NEO_RGB + NEO_KHZ400)
+{
   reset();
 }
 
 void Smalrubot::parse(char c) {
-  if (c == '!') index = 0;        // Reset request
-  else if (c == '.') process();   // End request and process
-  else request[index++] = c;      // Append to request
+  if (c == '!') {
+    index = 0;
+    receivingRequest = true;
+  }
+  else if (receivingRequest) {
+    if (c == '.') {
+      process();
+      receivingRequest = false;
+    }
+    else if (index < MAX_REQUEST_LENGTH) {
+      request[index++] = c;
+    }
+    else {
+      receivingRequest = false;
+    }
+  }
+}
+
+
+int Smalrubot::parseRequestValue(int n) {
+  if (index < 4 + (n + 1) * 3) {
+    return 0;
+  }
+
+  strncpy(valStr, request + 4 + n * 3, 3);
+  valStr[3] =  '\0';
+
+  return atoi(valStr);
 }
 
 void Smalrubot::process() {
@@ -21,10 +48,9 @@ void Smalrubot::process() {
   // Parse the request.
   strncpy(cmdStr, request, 2);      cmdStr[2] =  '\0';
   strncpy(pinStr, request + 2, 2);  pinStr[2] =  '\0';
-  strncpy(valStr, request + 4, 3);  valStr[3] =  '\0';
   cmd = atoi(cmdStr);
   pin = atoi(pinStr);
-  val = atoi(valStr);
+  val = parseRequestValue(0);
 
   #ifdef debug
    Serial.print("Received request - "); Serial.println(request);
@@ -48,21 +74,50 @@ void Smalrubot::process() {
 void Smalrubot::processCommand() {
   // Call the command.
   switch(cmd) {
-    case 0:  setMode             ();  break;
-    case 1:  dWrite              ();  break;
-    case 2:  dRead               ();  break;
-    case 3:  aWrite              ();  break;
-    case 4:  aRead               ();  break;
-    case 8:  servoToggle         ();  break;
-    case 9:  servoWrite          ();  break;
-    case 90: reset               ();  break;
-    default:                          break;
+    case 0:
+      setMode();
+      break;
+    case 1:
+      dWrite();
+      break;
+    case 2:
+      dRead();
+      break;
+    case 3:
+      aWrite();
+      break;
+    case 4:
+      aRead();
+      break;
+    case 8:
+      servoToggle();
+      break;
+    case 9:
+      servoWrite();
+      break;
+    case 10:
+      setNeoPixelPin();
+      break;
+    case 11:
+      setNeoPixelNumPixels();
+      break;
+    case 12:
+      setNeoPixelColor();
+      break;
+    case 13:
+      showNeoPixel();
+      break;
+    case 90:
+      reset();
+      break;
+    default:
+      break;
   }
 }
 
-
 // WRITE CALLBACK
 void Smalrubot::setupWrite(void (*writeCallback)(char *str)) {
+  pixels.begin();
   _writeCallback = writeCallback;
 }
 void Smalrubot::writeResponse() {
@@ -153,10 +208,47 @@ void Smalrubot::servoWrite() {
   servos[pin - SERVO_OFFSET].write(val);
 }
 
+// CMD = 10
+void Smalrubot::setNeoPixelPin() {
+  #ifdef debug
+    Serial.print("set NeoPixel pin "); Serial.println(pin);
+  #endif
+  pixels.setPin(pin);
+}
+
+// CMD = 11
+void Smalrubot::setNeoPixelNumPixels() {
+  #ifdef debug
+    Serial.print("set NeoPixel num pixels "); Serial.println(val);
+  #endif
+  // not support yet
+  // pixels.setNumPixels(val);
+}
+
+// CMD = 12
+void Smalrubot::setNeoPixelColor() {
+  #ifdef debug
+    Serial.print("set NeoPixel color "); Serial.println(val);
+  #endif
+  uint16_t n = pin;
+  uint8_t r = val, g = parseRequestValue(1), b = parseRequestValue(2);
+
+  pixels.setPixelColor(n, pixels.Color(r, g, b));
+}
+
+// CMD = 13
+void Smalrubot::showNeoPixel() {
+  #ifdef debug
+    Serial.println("show NeoPixel");
+  #endif
+  pixels.show();
+}
+
 // CMD = 90
 void Smalrubot::reset() {
   #ifdef debug
     Serial.println("Reset the board to defaults.");
   #endif
   sprintf(response, "ACK:%02d", A0);
+  receivingRequest = false;
 }

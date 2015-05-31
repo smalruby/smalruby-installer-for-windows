@@ -1,6 +1,12 @@
 #include "Smalrubot.h"
 #include <Servo.h>
-Smalrubot smalrubot;
+#include "Adafruit_NeoPixel.h"
+#include <avr/power.h>
+
+#define DEFAULT_NEO_PIXEL_NUM 16
+#define DEFAULT_NEO_PIXEL_PIN 5
+
+Smalrubot smalrubot(DEFAULT_NEO_PIXEL_NUM, DEFAULT_NEO_PIXEL_PIN);
 
 // Smalrubot.h doesn't handle TXRX. Setup a function to tell it to write to Serial.
 void writeResponse(char *response) { Serial.println(response); }

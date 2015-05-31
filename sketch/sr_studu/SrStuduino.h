@@ -10,7 +10,7 @@
 
 class SrStuduino : public Smalrubot {
   public:
-    SrStuduino();
+    SrStuduino(int neo_pixel_num, int neo_pixel_pin);
 
   protected:
     Studuino studuino;
