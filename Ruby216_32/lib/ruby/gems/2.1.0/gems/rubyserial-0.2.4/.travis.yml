@@ -1,0 +1,19 @@
+language: ruby
+rvm:
+  - 1.9.3
+  - 2.0
+  - 2.1
+  - 2.2
+  - ruby-head
+  - jruby
+  - jruby-head
+  - rbx-2
+matrix:
+  allow_failures:
+    - rvm: jruby-head
+    - rvm: ruby-head
+install:
+  - sudo apt-get update && sudo apt-get install --force-yes socat
+script:
+  - bundle install
+  - CODECLIMATE_REPO_TOKEN=70754a8aa666790236dbbb910727648f4dbb1f73a28f886d0b0c9e39a36b5a79 bundle exec rspec -fd
