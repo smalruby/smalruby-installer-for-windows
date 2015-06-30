@@ -1,0 +1,109 @@
+AllCops:
+  Exclude:
+    - tmp/**/*
+    - vendor/**/*
+    - work/**/*
+    - samples/**/*
+
+# Configuration parameters: AllowSafeAssignment.
+Lint/AssignmentInCondition:
+  Enabled: false
+
+Lint/HandleExceptions:
+  Enabled: false
+
+Lint/RescueException:
+  Enabled: false
+
+# Cop supports --auto-correct.
+Lint/UnusedMethodArgument:
+  Enabled: false
+
+Metrics/AbcSize:
+  Max: 58
+
+# Configuration parameters: CountComments.
+Metrics/ClassLength:
+  Max: 1000
+
+Metrics/CyclomaticComplexity:
+  Max: 8
+
+# Configuration parameters: AllowURI, URISchemes.
+Metrics/LineLength:
+  Max: 162
+
+# Configuration parameters: CountComments.
+Metrics/MethodLength:
+  Max: 100
+
+# Configuration parameters: CountComments.
+Metrics/ModuleLength:
+  Max: 170
+
+Metrics/PerceivedComplexity:
+  Max: 8
+
+Performance/ParallelAssignment:
+  Enabled: false
+
+Style/AccessorMethodName:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
+# Configuration parameters: EnforcedStyle, SupportedStyles, ProceduralMethods, FunctionalMethods, IgnoredMethods.
+Style/BlockDelimiters:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+# Configuration parameters: MinBodyLength.
+Style/GuardClause:
+  Enabled: false
+
+# Configuration parameters: EnforcedStyle, SupportedStyles, UseHashRocketsWithSymbolValues.
+Style/HashSyntax:
+  Enabled: false
+
+# Configuration parameters: MaxLineLength.
+Style/IfUnlessModifier:
+  Enabled: false
+
+# Configuration parameters: EnforcedStyle, SupportedStyles.
+Style/MultilineOperationIndentation:
+  Enabled: false
+
+# Configuration parameters: PreferredDelimiters.
+Style/PercentLiteralDelimiters:
+  Enabled: false
+
+Style/PerlBackrefs:
+  Enabled: false
+
+# Configuration parameters: AllowMultipleReturnValues.
+Style/RedundantReturn:
+  Enabled: false
+
+Style/SpecialGlobalVars:
+  Enabled: false
+
+# Configuration parameters: EnforcedStyle, SupportedStyles.
+Style/StringLiterals:
+  Enabled: false
+
+# Configuration parameters: IgnoredMethods.
+Style/SymbolProc:
+  Enabled: false
+
+# Configuration parameters: EnforcedStyleForMultiline, SupportedStyles.
+Style/TrailingComma:
+  Enabled: false
+
+Style/UnneededPercentQ:
+  Enabled: false
+
+Style/NegatedIf:
+  Enabled: false

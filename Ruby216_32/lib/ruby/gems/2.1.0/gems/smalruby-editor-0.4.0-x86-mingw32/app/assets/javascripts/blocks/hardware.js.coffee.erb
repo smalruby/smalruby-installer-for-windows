@@ -1,0 +1,603 @@
+# 「ハードウェア」ジャンル
+
+<%
+  category = 'hardware'
+  require 'smalruby_editor'
+  require 'smalruby_editor/blockly_message_helper'
+  colors = SmalrubyEditor::COLORS
+%>
+
+dioPinDropdown = null
+pwmPinDropdown = null
+rgbLedPinDropdown = null
+aiPinDropdown = null
+acDropdown = null
+lorDropdown = null
+twoWDPinDropdown = null
+actionDropdown = null
+
+$(document).ready ->
+  # ハードウェアの環境設定
+  window.SmalrubyEditor.Hardware =
+    Type: 'Arduino' # 種別
+    DioPins: [2..13] # デジタルIOピン
+    PwmPins: [3, 5, 6, 9, 10, 11] # デジタルIOピンのうちPWMに対応しているピン
+    AiPins: [0..5] # アナログ入力ピン
+
+  dioPinDropdown =
+    (["D#{n}", "D#{n}"] for n in window.SmalrubyEditor.Hardware.DioPins)
+
+  pwmPinDropdown =
+    (["D#{n}", "D#{n}"] for n in window.SmalrubyEditor.Hardware.PwmPins)
+
+  rgbLedPinDropdown =
+    (["D#{n}", "D#{n}"] for n in [3, 9])
+
+  aiPinDropdown =
+    (["A#{n}", "A#{n}"] for n in window.SmalrubyEditor.Hardware.AiPins)
+
+  acDropdown = [
+    [<%= bm('.anode') %>, 'anode']
+    [<%= bm('.cathode') %>, 'cathode']
+  ]
+
+  lorDropdown = [
+    [<%= bm('.left') %>, 'left'],
+    [<%= bm('.right') %>, 'right'],
+  ]
+
+  twoWDPinDropdown = (["D#{n}", "D#{n}"] for n in [5, 6])
+
+  actionDropdown = [
+    [<%= bm('common.forward') %>, 'forward'],
+    [<%= bm('common.backward') %>, 'backward'],
+    [<%= bm('common.turn_left') %>, 'turn_left'],
+    [<%= bm('common.turn_right') %>, 'turn_right'],
+    [<%= bm('common.stop') %>, 'stop'],
+  ]
+
+# ハードウェアを準備する
+<% n = "#{category}_init_hardware" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:etc] %>)
+    @appendDummyInput().appendField(<%= bm('.init_hardware') %>)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  Blockly.Ruby.definitions_['prepare__init_hardware'] = 'init_hardware'
+  ''
+
+# 「LED」サブジャンル
+
+# LED[▼PIN]をオンにする
+# LED[▼PIN]をオフにする
+<%
+  %w(turn_on turn_off).each do |method|
+    n = "#{category}_led_#{method}"
+%>
+
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:looks] %>)
+    @interpolateMsg(<%= bm(".led_#{method}") %>,
+                    ['PIN', new Blockly.FieldDropdown(dioPinDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+    @setFieldValue('D2', 'PIN')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+  Blockly.Ruby.characterMethodCall_("led(#{Blockly.Ruby.quote_(pin)}).<%= method %>")
+<% end %>
+
+# Adafruit Pixel
+<% subcategory = 'neo_pixel' %>
+
+<% n = "#{category}_#{subcategory}_set_rgb" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:looks] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_set_rgb") %>,
+                    ['PIN', new Blockly.FieldDropdown(pwmPinDropdown)],
+                    ['RED', ['Number'], Blockly.ALIGN_RIGHT],
+                    ['GREEN', ['Number'], Blockly.ALIGN_RIGHT],
+                    ['BLUE', ['Number'], Blockly.ALIGN_RIGHT],
+                    Blockly.ALIGN_RIGHT)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+  red = Blockly.Ruby.valueToCode(@, 'RED', Blockly.Ruby.ORDER_NONE) || '0'
+  green = Blockly.Ruby.valueToCode(@, 'GREEN', Blockly.Ruby.ORDER_NONE) || '0'
+  blue = Blockly.Ruby.valueToCode(@, 'BLUE', Blockly.Ruby.ORDER_NONE) || '0'
+  Blockly.Ruby.characterMethodCall_("<%= subcategory %>(#{Blockly.Ruby.quote_(pin)}).set(color: [#{red}, #{green}, #{blue}])")
+
+
+# 「RGB LED」サブジャンル
+
+# RGB LED[▼アノード]コモン[▼PIN]を[カラー]にする
+<% n = "#{category}_rgb_led_set_color" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:looks] %>)
+    @interpolateMsg(<%= bm('.rgb_led_set_color') %>,
+                    ['AC', new Blockly.FieldDropdown(acDropdown)],
+                    ['PIN', new Blockly.FieldDropdown(rgbLedPinDropdown)],
+                    ['COLOUR', new Blockly.FieldColour('#ff0000')],
+                    Blockly.ALIGN_RIGHT)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  ac = @getFieldValue('AC')
+  pin = @getFieldValue('PIN')
+  c = block.getFieldValue('COLOUR')
+  red = parseInt(c[1..2], 16)
+  green = parseInt(c[3..4], 16)
+  blue = parseInt(c[5..6], 16)
+  Blockly.Ruby.characterSetVariable_("rgb_led_#{ac}(#{Blockly.Ruby.quote_(pin)}).color",
+                                    "[#{red}, #{green}, #{blue}]")
+
+# RGB LED[▼アノード]コモン[▼PIN]をオフにする
+<% n = "#{category}_rgb_led_turn_off" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:looks] %>)
+    @interpolateMsg(<%= bm('.rgb_led_turn_off') %>,
+                    ['AC', new Blockly.FieldDropdown(acDropdown)],
+                    ['PIN', new Blockly.FieldDropdown(rgbLedPinDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  ac = @getFieldValue('AC')
+  pin = @getFieldValue('PIN')
+  Blockly.Ruby.characterMethodCall_("rgb_led_#{ac}(#{Blockly.Ruby.quote_(pin)}).turn_off")
+
+# 「7セグディスプレイ」サブジャンル
+
+# 7セグディスプレイに[▼0-9]を表示する
+<% n = "#{category}_seven_segment_display_show" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    dropdown = ([String(n), String(n)] for n in [0..9])
+
+    @setHelpUrl('')
+    @setColour(<%= colors[:looks] %>)
+    @interpolateMsg(<%= bm('.seven_segment_display_show') %>,
+                    ['NUM', new Blockly.FieldDropdown(dropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  num = parseInt(@getFieldValue('NUM'))
+  Blockly.Ruby.characterMethodCall_("seven_segment_display.show(#{num})")
+
+# 7セグディスプレイをオフにする
+<% n = "#{category}_seven_segment_display_off" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:looks] %>)
+    @appendDummyInput()
+      .appendField(<%= bm('.seven_segment_display_off') %>)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  Blockly.Ruby.characterMethodCall_("seven_segment_display.off")
+
+# 「LCD」サブジャンル
+
+# LCDに(　)を表示する
+<% n = "#{category}_lcd_puts" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:looks] %>)
+    @interpolateMsg(<%= bm('.lcd_puts') %>,
+                    ['TEXT', ['String'], Blockly.ALIGN_RIGHT],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  text = Blockly.Ruby.valueToCode(@, 'TEXT', Blockly.Ruby.ORDER_NONE) || ''
+  Blockly.Ruby.characterMethodCall_("lcd.puts(#{text})")
+
+# LCDをクリアする
+<% n = "#{category}_lcd_clear" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:looks] %>)
+    @appendDummyInput()
+      .appendField(<%= bm('.lcd_clear') %>)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  Blockly.Ruby.characterMethodCall_('lcd.clear')
+
+# 「サーボ」サブジャンル
+
+# 「サーボ[▼PIN]を(　)度(5～180)にする」ブロック
+<% n = "#{category}_servo_set_position" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:motion] %>)
+    @interpolateMsg(<%= bm('.servo_set_position') %>,
+                    ['PIN', new Blockly.FieldDropdown(pwmPinDropdown)],
+                    ['POS', ['Number'], Blockly.ALIGN_RIGHT],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+
+  pos = Blockly.Ruby.valueToCode(@, 'POS', Blockly.Ruby.ORDER_FUNCTION_CALL) || '5'
+  Blockly.Ruby.characterMethodCall_("servo(#{Blockly.Ruby.quote_(pin)}).position = #{pos}")
+
+# 「2WD車」サブジャンル
+<% subcategory = 'two_wheel_drive_car' %>
+
+# 2WD車[▼PIN]を進める
+# 2WD車[▼PIN]をバックさせる
+# 2WD車[▼PIN]を左に曲げる
+# 2WD車[▼PIN]を右に曲げる
+# 2WD車[▼PIN]を止める
+<%
+  %w(forward backward turn_left turn_right stop).each do |method|
+    n = "#{category}_#{subcategory}_#{method}"
+%>
+
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:motion] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_#{method}") %>,
+                    ['PIN', new Blockly.FieldDropdown(twoWDPinDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+
+  Blockly.Ruby.characterMethodCall_("two_wheel_drive_car(#{Blockly.Ruby.quote_(pin)}).<%= method %>")
+<% end %>
+
+# 2WD車[▼PIN]を（　）秒[▼コマンド]
+<% n = "#{category}_#{subcategory}_run" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:motion] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_run") %>,
+                    ['COMMAND', ['String'], Blockly.ALIGN_RIGHT],
+                    ['PIN', new Blockly.FieldDropdown(twoWDPinDropdown)],
+                    ['SEC', ['Number'], Blockly.ALIGN_RIGHT],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+  sec = Blockly.Ruby.valueToCode(@, 'SEC', Blockly.Ruby.ORDER_NONE) || 0
+  command = Blockly.Ruby.valueToCode(@, 'COMMAND', Blockly.Ruby.ORDER_NONE) || Blockly.Ruby.quote_('stop')
+
+  Blockly.Ruby.characterMethodCall_("two_wheel_drive_car(#{Blockly.Ruby.quote_(pin)}).run(command: #{command}, sec: #{sec})")
+
+# [▼コマンド]
+<% n = "#{category}_#{subcategory}_commands" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:motion] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_commands") %>,
+                    ['COMMAND', new Blockly.FieldDropdown(actionDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setOutput(true, 'String')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  code = Blockly.Ruby.quote_(@getFieldValue('COMMAND'))
+  [code, Blockly.Ruby.ORDER_ATOMIC]
+
+# 2WD車[▼PIN]の[▼LOR]の速度を<速度の割合>%にする
+<% n = "#{category}_#{subcategory}_set_speed" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:motion] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_set_speed") %>,
+                    ['PIN', new Blockly.FieldDropdown(pwmPinDropdown)],
+                    ['LOR', new Blockly.FieldDropdown(lorDropdown)],
+                    ['SPEED', ['Number'], Blockly.ALIGN_RIGHT],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+  lor = @getFieldValue('LOR')
+  speed = Blockly.Ruby.valueToCode(@, 'SPEED', Blockly.Ruby.ORDER_NONE) || '100'
+  Blockly.Ruby.characterMethodCall_("two_wheel_drive_car(#{Blockly.Ruby.quote_(pin)}).#{lor}_speed = #{speed}")
+
+# 2WD車[▼PIN]の[▼LOR]の速度(%)
+<% n = "#{category}_#{subcategory}_speed" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:sensing] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_speed") %>,
+                    ['PIN', new Blockly.FieldDropdown(pwmPinDropdown)],
+                    ['LOR', new Blockly.FieldDropdown(lorDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setOutput(true, 'Number')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+  lor = @getFieldValue('LOR')
+  Blockly.Ruby.characterMethodCallInput_("two_wheel_drive_car(#{Blockly.Ruby.quote_(pin)}).#{lor}_speed")
+
+# 「（モータードライバ{で,の}）モータ」サブジャンル
+<% subcategory = 'motor_driver' %>
+
+# (モータードライバ[▼PIN]で)モーターを[▼正転させる]
+<% n = "#{category}_#{subcategory}" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    methodDropdown = [
+      [<%= bm(".#{subcategory}_forward") %>, 'forward'],
+      [<%= bm(".#{subcategory}_backward") %>, 'backward'],
+      [<%= bm(".#{subcategory}_stop") %>, 'stop'],
+    ]
+
+    @setHelpUrl('')
+    @setColour(<%= colors[:motion] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}") %>,
+                    ['PIN', new Blockly.FieldDropdown(pwmPinDropdown)],
+                    ['METHOD', new Blockly.FieldDropdown(methodDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+  method = @getFieldValue('METHOD')
+
+  Blockly.Ruby.characterMethodCall_("motor_driver(#{Blockly.Ruby.quote_(pin)}).#{method}")
+
+# (モータードライバ[▼PIN]の)モーターの速度を<SPEED>%にする
+<% n = "#{category}_#{subcategory}_set_speed" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:motion] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_set_speed") %>,
+                    ['PIN', new Blockly.FieldDropdown(pwmPinDropdown)],
+                    ['SPEED', ['Number'], Blockly.ALIGN_RIGHT],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+  speed = Blockly.Ruby.valueToCode(@, 'SPEED', Blockly.Ruby.ORDER_NONE) || '100'
+  Blockly.Ruby.characterMethodCall_("motor_driver(#{Blockly.Ruby.quote_(pin)}).speed = #{speed}")
+
+# (モータードライバ[▼PIN]の)モーターの速度(%)
+<% n = "#{category}_#{subcategory}_speed" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:sensing] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_speed") %>,
+                    ['PIN', new Blockly.FieldDropdown(pwmPinDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setOutput(true, 'Number')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+  Blockly.Ruby.characterMethodCallInput_("motor_driver(#{Blockly.Ruby.quote_(pin)}).speed")
+
+
+# 「ボタン」サブジャンル
+
+# 条件:ボタン[▼PIN]が[▼押された]
+<% n = "#{category}_button_pressed_or_released" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    porDropdown = window.SmalrubyEditor.Sensing.PressedOrReleasedDropdown
+
+    @setHelpUrl('')
+    @setColour(<%= colors[:sensing] %>)
+    @interpolateMsg(<%= bm(".button_pressed_or_released") %>,
+                    ['PIN', new Blockly.FieldDropdown(dioPinDropdown)],
+                    ['POR', new Blockly.FieldDropdown(porDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setOutput(true, 'Boolean')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+  por = @getFieldValue('POR')
+  Blockly.Ruby.characterMethodCallInput_("button(#{Blockly.Ruby.quote_(pin)}).#{por}?")
+
+# 「センサー」サブジャンル
+
+# センサー[▼PIN]
+<% n = "#{category}_sensor_value" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:sensing] %>)
+    @interpolateMsg(<%= bm('.sensor_value') %>,
+                    ['PIN', new Blockly.FieldDropdown(aiPinDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setOutput(true, 'Number')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  pin = @getFieldValue('PIN')
+  Blockly.Ruby.characterMethodCallInput_("sensor(#{Blockly.Ruby.quote_(pin)}).value")
+
+
+# SmalrubotV3 sub category
+# SmalrubotS1 sub category
+<% %w(smalrubot_v3 smalrubot_s1).each do |subcategory| %>
+
+# turn on/off Smalrubot s1 blue/white LED
+<% n = "#{category}_#{subcategory}_led_turn_on_or_off" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    oooDropdown = [
+      [<%= bm('common.turn_on') %>, 'turn_on'],
+      [<%= bm('common.turn_off') %>, 'turn_off'],
+    ]
+
+    @setHelpUrl('')
+    @setColour(<%= colors[:looks] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_led_turn_on_or_off") %>,
+                    ['LOR', new Blockly.FieldDropdown(lorDropdown)],
+                    ['OOO', new Blockly.FieldDropdown(oooDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  lor = @getFieldValue('LOR')
+  ooo = @getFieldValue('OOO')
+  Blockly.Ruby.characterMethodCall_("<%= subcategory %>.#{ooo}_#{lor}_led")
+
+# forward/backward/turn left/turn right/stop Smalrubot s1
+<% n = "#{category}_#{subcategory}_action" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:motion] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_action") %>,
+                    ['ACTION', new Blockly.FieldDropdown(actionDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  action = @getFieldValue('ACTION')
+  Blockly.Ruby.characterMethodCall_("<%= subcategory %>.#{action}")
+
+# forward/backward/turn left/turn right/stop Smalrubot s1 for ( ) secs
+<% n = "#{category}_#{subcategory}_action_with_sec" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:motion] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_action_with_sec") %>,
+                    ['ACTION', new Blockly.FieldDropdown(actionDropdown)],
+                    ['SEC', ['Number'], Blockly.ALIGN_RIGHT],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  action = @getFieldValue('ACTION')
+  sec = Blockly.Ruby.valueToCode(@, 'SEC', Blockly.Ruby.ORDER_FUNCTION_CALL) || 'nil'
+  Blockly.Ruby.characterMethodCall_("<%= subcategory %>.#{action}(sec: #{sec})")
+
+# Smalrubot s1 left/right sensor value
+<% n = "#{category}_#{subcategory}_sensor_value" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:sensing] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_sensor_value") %>,
+                    ['LOR', new Blockly.FieldDropdown(lorDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setOutput(true, 'Boolean')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  lor = @getFieldValue('LOR')
+  Blockly.Ruby.characterMethodCallInput_("<%= subcategory %>.#{lor}_sensor_value")
+
+# Smalrubot s1 left/right dc motor power ratio
+<% n = "#{category}_#{subcategory}_dc_motor_power_ratio" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:sensing] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_dc_motor_power_ratio") %>,
+                    ['LOR', new Blockly.FieldDropdown(lorDropdown)],
+                    Blockly.ALIGN_RIGHT)
+    @setOutput(true, 'Number')
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  lor = @getFieldValue('LOR')
+  Blockly.Ruby.characterMethodCallInput_("<%= subcategory %>.#{lor}_dc_motor_power_ratio")
+
+# set Smalrubot s1 left/right dc motor power ratio
+<% n = "#{category}_#{subcategory}_dc_motor_set_power_ratio" %>
+Blockly.Blocks['<%= n %>'] =
+  init: ()->
+    @setHelpUrl('')
+    @setColour(<%= colors[:motion] %>)
+    @interpolateMsg(<%= bm(".#{subcategory}_dc_motor_set_power_ratio") %>,
+                    ['LOR', new Blockly.FieldDropdown(lorDropdown)],
+                    ['SPEED', ['Number'], Blockly.ALIGN_RIGHT],
+                    Blockly.ALIGN_RIGHT)
+    @setInputsInline(true)
+    @setPreviousStatement(true)
+    @setNextStatement(true)
+    @setTooltip('')
+
+Blockly.Ruby['<%= n %>'] = (block) ->
+  lor = @getFieldValue('LOR')
+  speed = Blockly.Ruby.valueToCode(@, 'SPEED', Blockly.Ruby.ORDER_NONE) || '100'
+  Blockly.Ruby.characterSetVariable_("<%= subcategory %>.#{lor}_dc_motor_power_ratio",
+                                     speed)
+
+<% end %>
