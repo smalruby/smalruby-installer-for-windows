@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
-# stub: smalruby-editor 0.4.1 x86-mingw32 lib
+# stub: smalruby-editor 0.4.2 x86-mingw32 lib
 
 Gem::Specification.new do |s|
   s.name = "smalruby-editor"
-  s.version = "0.4.1"
+  s.version = "0.4.2"
   s.platform = "x86-mingw32"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
