@@ -1,0 +1,16 @@
+toolbox_name: default
+#toolbox__default__enabled_hardware_blocks: true
+#toolbox__default__enabled_smalrubot_v3_blocks: true
+#toolbox__default__enabled_smalrubot_s1_blocks: true
+
+#toolbox_name: smalrubot_v3
+
+#toolbox_name: smalrubot_s1
+
+#disabled_add_character_from_beginning: true
+#disabled_new_character: true
+enabled_readonly_ruby_mode: true
+#hardware_port: ""
+
+enabled_must_signin: true
+

@@ -1,0 +1,252 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <character name="car1" angle="0" costumes="costume1:car2.png" y="240" x="320"></character>
+  <character name="car2" angle="0" costumes="costume1:car3.png" y="240" x="320"></character>
+  <block id="432" type="ruby_comment" y="-662" x="38">
+    <field name="COMMENT">対称な図形＋プログラミング２</field>
+    <next>
+      <block id="433" type="character_new">
+        <field name="NAME">car1</field>
+        <statement name="DO">
+          <block id="434" type="events_on_start">
+            <statement name="DO">
+              <block id="435" type="variables_set" inline="true">
+                <field name="VAR">i</field>
+                <value name="VALUE">
+                  <block id="436" type="math_number">
+                    <field name="NUM">32</field>
+                  </block>
+                </value>
+                <next>
+                  <block id="437" type="control_times" inline="true">
+                    <value name="COUNT">
+                      <block id="438" type="math_number">
+                        <field name="NUM">8</field>
+                      </block>
+                    </value>
+                    <statement name="DO">
+                      <block id="439" type="ruby_statement">
+                        <field name="STATEMENT">World.instance.current_stage.line(x1: i, y1: 32, x2: i, y2: 480, color: "lightgrey")</field>
+                        <next>
+                          <block id="440" type="variables_set" inline="true">
+                            <field name="VAR">i</field>
+                            <value name="VALUE">
+                              <block id="441" type="operators_add" inline="true">
+                                <value name="A">
+                                  <block id="442" type="variables_get">
+                                    <field name="VAR">i</field>
+                                  </block>
+                                </value>
+                                <value name="B">
+                                  <block id="443" type="math_number">
+                                    <field name="NUM">80</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                          </block>
+                        </next>
+                      </block>
+                    </statement>
+                    <next>
+                      <block id="444" type="variables_set" inline="true">
+                        <field name="VAR">i</field>
+                        <value name="VALUE">
+                          <block id="445" type="math_number">
+                            <field name="NUM">32</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block id="446" type="control_times" inline="true">
+                            <value name="COUNT">
+                              <block id="447" type="math_number">
+                                <field name="NUM">6</field>
+                              </block>
+                            </value>
+                            <statement name="DO">
+                              <block id="448" type="ruby_statement">
+                                <field name="STATEMENT">World.instance.current_stage.line(x1: 32, y1: i, x2: 640, y2: i, color: "lightgrey")</field>
+                                <next>
+                                  <block id="449" type="variables_set" inline="true">
+                                    <field name="VAR">i</field>
+                                    <value name="VALUE">
+                                      <block id="450" type="operators_add" inline="true">
+                                        <value name="A">
+                                          <block id="451" type="variables_get">
+                                            <field name="VAR">i</field>
+                                          </block>
+                                        </value>
+                                        <value name="B">
+                                          <block id="452" type="math_number">
+                                            <field name="NUM">80</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </next>
+                              </block>
+                            </statement>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+  <block id="453" type="ruby_comment" y="14" x="56">
+    <field name="COMMENT">対称の元の図形</field>
+    <next>
+      <block id="454" type="character_new">
+        <field name="NAME">car1</field>
+        <statement name="DO">
+          <block id="455" type="events_on_start">
+            <statement name="DO">
+              <block id="456" type="motion_set_x_y" inline="true">
+                <value name="X">
+                  <block id="457" type="math_number">
+                    <field name="NUM">320</field>
+                  </block>
+                </value>
+                <value name="Y">
+                  <block id="458" type="math_number">
+                    <field name="NUM">240</field>
+                  </block>
+                </value>
+                <next>
+                  <block id="459" type="control_sleep" inline="true">
+                    <value name="SEC">
+                      <block id="460" type="math_number">
+                        <field name="NUM">0.5</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block id="461" type="pen_set_pen_color">
+                        <field name="COLOUR">#3366ff</field>
+                        <next>
+                          <block id="462" type="pen_down_pen">
+                            <next>
+                              <block id="463" type="motion_set_x_y" inline="true">
+                                <value name="X">
+                                  <block id="464" type="math_number">
+                                    <field name="NUM">240</field>
+                                  </block>
+                                </value>
+                                <value name="Y">
+                                  <block id="465" type="math_number">
+                                    <field name="NUM">160</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block id="466" type="motion_set_x_y" inline="true">
+                                    <value name="X">
+                                      <block id="467" type="math_number">
+                                        <field name="NUM">240</field>
+                                      </block>
+                                    </value>
+                                    <value name="Y">
+                                      <block id="468" type="math_number">
+                                        <field name="NUM">320</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block id="469" type="looks_hide"></block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+  <block id="470" type="ruby_comment" y="11" x="498">
+    <field name="COMMENT">対称の先の図形</field>
+    <next>
+      <block id="471" type="character_new">
+        <field name="NAME">car2</field>
+        <statement name="DO">
+          <block id="472" type="events_on_click">
+            <statement name="DO">
+              <block id="473" type="motion_set_x_y" inline="true">
+                <value name="X">
+                  <block id="474" type="math_number">
+                    <field name="NUM">320</field>
+                  </block>
+                </value>
+                <value name="Y">
+                  <block id="475" type="math_number">
+                    <field name="NUM">240</field>
+                  </block>
+                </value>
+                <next>
+                  <block id="476" type="control_sleep" inline="true">
+                    <value name="SEC">
+                      <block id="477" type="math_number">
+                        <field name="NUM">0.5</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block id="478" type="pen_set_pen_color">
+                        <field name="COLOUR">#ff0000</field>
+                        <next>
+                          <block id="479" type="pen_down_pen">
+                            <next>
+                              <block id="480" type="motion_set_x_y" inline="true">
+                                <value name="X">
+                                  <block id="481" type="math_number">
+                                    <field name="NUM">240</field>
+                                  </block>
+                                </value>
+                                <value name="Y">
+                                  <block id="482" type="math_number">
+                                    <field name="NUM">160</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block id="483" type="motion_set_x_y" inline="true">
+                                    <value name="X">
+                                      <block id="484" type="math_number">
+                                        <field name="NUM">240</field>
+                                      </block>
+                                    </value>
+                                    <value name="Y">
+                                      <block id="485" type="math_number">
+                                        <field name="NUM">320</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block id="486" type="looks_hide"></block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+</xml>
