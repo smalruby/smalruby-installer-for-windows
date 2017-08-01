@@ -1,15 +1,15 @@
 # -*- encoding: utf-8 -*-
-# stub: smalruby-editor 0.4.2 x86-mingw32 lib
+# stub: smalruby-editor 0.4.3 x86-mingw32 lib
 
 Gem::Specification.new do |s|
   s.name = "smalruby-editor"
-  s.version = "0.4.2"
+  s.version = "0.4.3"
   s.platform = "x86-mingw32"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Kouji Takao"]
-  s.date = "2017-01-14"
+  s.date = "2017-08-01"
   s.description = "The smalruby-editor is a visual programming editor that can create aRuby script by combining individual blocks similar to Scratch. It can also enter the program as better than Scratch."
   s.email = ["kouji.takao@gmail.com"]
   s.executables = ["smalruby-editor"]

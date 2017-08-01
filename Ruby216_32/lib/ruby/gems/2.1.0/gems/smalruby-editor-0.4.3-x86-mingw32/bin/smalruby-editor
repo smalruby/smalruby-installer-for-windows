@@ -88,12 +88,22 @@ module Rails
 
     def parse_options_with_start_callback(args)
       options = parse_options_without_start_callback(args)
-      options[:StartCallback] = -> {
-        uri = "http://localhost:#{options[:Port]}"
-        launchy = Launchy.open(uri) do |exception|
-          puts "Attempted to open #{uri} and failed because #{exception}"
-        end
-      }
+      if SmalrubyEditor.windows?
+        options[:StartCallback] = -> {
+          uri = "http://localhost:#{options[:Port]}"
+          system("start iexplore #{uri}")
+          if $? != 0
+            puts "Attempted to open #{uri} and failed"
+          end
+        }
+      else
+        options[:StartCallback] = -> {
+          uri = "http://localhost:#{options[:Port]}"
+          launchy = Launchy.open(uri) do |exception|
+            puts "Attempted to open #{uri} and failed because #{exception}"
+          end
+        }
+      end
       options
     end
     alias_method_chain :parse_options, :start_callback
